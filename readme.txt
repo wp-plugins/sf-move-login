@@ -62,11 +62,6 @@ You're screwed! No, I'm kidding, but you need a ftp access to your site. When lo
 Eventually, check out [my blog](http://www.screenfeed.fr/sfml/) for more infos, help, or bug reports (sorry guys, it's in french, but feel free to leave a comment in english).
 
 
-== Screenshots ==
-
-Nothing to show.
-
-
 == Changelog ==
 
 = 0.1.1 =
