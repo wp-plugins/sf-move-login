@@ -1,4 +1,4 @@
-=== SF Move Login ===
+=== Move Login ===
 
 Contributors: GregLone, juliobox
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UBY2MY2J4YB7J&item_number=SF-Move-Login
@@ -22,7 +22,8 @@ No settings: activate, it works.
 
 Also remember: using this plugin does NOT exempt you to use a strong password. Moreover, never use "admin" as login, this is the first attempt for bots.
 
-**Please note that the plugin works properly so far, but still in beta.**
+**Please note that even if the plugin works properly so far, it still is a beta.**
+Please use the forum to report bugs, the plugin will be available on my site when the version 1.0 is reached. Thanks!
 
 = Translations =
 
