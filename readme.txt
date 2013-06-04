@@ -32,7 +32,7 @@ Please use the forum to report bugs, the plugin will be available on my site whe
 
 = Multisite =
 
-Not tested, but should be ready for Multisite.
+Not ready for Multisite, yet.
 
 = Requirements =
 
@@ -68,6 +68,12 @@ Nothing to show.
 
 
 == Changelog ==
+
+= 0.1.1 =
+
+* 2013/06/04
+* Bugfix: php notice due to a missing parameter.
+* Bugfix: incorrect network_site_url filter.
 
 = 0.1 =
 
