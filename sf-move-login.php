@@ -3,81 +3,25 @@
  * Plugin Name: SF Move Login
  * Plugin URI: http://www.screenfeed.fr
  * Description: Change your login url to http://example.com/login
- * Version: 0.1.1
+ * Version: 1.0-RC1
  * Author: Grégory Viguier
  * Author URI: http:www.screenfeed.fr/greg/
  * License: GPLv3
+ * License URI: http://www.screenfeed.fr/gpl-v3.txt
  * Require: WordPress 3.0
+ * Network: true
  * Text Domain: sfml
  * Domain Path: /languages/
  */
 
-/* ----------------------------------------------------------------------------- */
-/*																				 */
-/*							Activation / Deactivation							 */
-/*																				 */
-/* ----------------------------------------------------------------------------- */
+if( !defined( 'ABSPATH' ) )
+	die( 'Cheatin\' uh?' );
 
-register_activation_hook( __FILE__, 'sfml_activate' );
-function sfml_activate() {
-	$dies = array();
-	$notices = array();
-	$home_path = get_home_path();
-	load_plugin_textdomain( 'sfml', false, basename( dirname( __FILE__ ) ) . '/languages/' );	// wp_die() will need i18n
-
-	if ( iis7_supports_permalinks() ) {
-		if ( !( ( !file_exists($home_path . 'web.config') && win_is_writable($home_path) ) || win_is_writable($home_path . 'web.config') ) )
-			$notices[] = 'htaccess_not_writable';
-	} else {
-		if ( !( ( !file_exists($home_path . '.htaccess') && is_writable($home_path) ) || is_writable($home_path . '.htaccess') ) )
-			$notices[] = 'htaccess_not_writable';
-	}
-	if ( !get_option('permalink_structure') )
-		$dies[] = sprintf(__('Please Make sure to enable %s.', 'sfml'), '<a href="options-permalink.php">'.__('Permalinks').'</a>');
-
-	if ( empty($GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI']) && empty($_SERVER['REQUEST_URI']) )
-		$dies[] = __('It seems your server configuration prevent the plugin to work properly. <i>SF Move Login</i> will not be activated.', 'sfml');
-
-	if ( count($dies) ) {
-		wp_die( __('<strong>SF Move Login</strong> has not been activated.', 'sfml').'<br/>'.implode('<br/>', $dies), __('Error'), array('back_link' => true) );
-	} else {
-		if ( count($notices) )
-			set_transient('sfml_notices-'.get_current_user_id(), $notices);
-		sfml_rewrite();
-		flush_rewrite_rules();
-	}
-}
+define( 'SFML_FILE', __FILE__ );
 
 
-register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
-
-
-// !Admin notices
-
-add_action('admin_init', 'sfml_notices');
-function sfml_notices() {
-	$user_id = get_current_user_id();
-	$notices = get_transient('sfml_notices-'.$user_id);
-
-	if ( $notices && is_array($notices) && count($notices) ) {
-		foreach ( $notices as $notice ) {
-			add_action('admin_notices', 'sfml_'.$notice.'_notice');
-		}
-		delete_transient('sfml_notices-'.$user_id);
-	}
-}
-
-
-function sfml_htaccess_not_writable_notice() {
-	$file = iis7_supports_permalinks() ? '<code>web.config</code>' : '<code>.htaccess</code>';
-	echo '<div class="error"><p>'
-			.sprintf(
-				__('<i>SF Move Login</i> needs access to the %1$s file. Please visit the %2$s settings page and copy/paste the given code into the %1$s file.', 'sfml'),
-				$file,
-				'<a href="options-permalink.php">'.__('Permalinks').'</a>'
-			)
-		.'</p></div>';
-}
+if ( is_admin() && !(defined('DOING_AJAX') && DOING_AJAX) )
+	include( plugin_dir_path( SFML_FILE ) . 'inc/admin.inc.php' );
 
 
 /* ----------------------------------------------------------------------------- */
@@ -88,7 +32,7 @@ function sfml_htaccess_not_writable_notice() {
 
 add_action( 'init', 'sfml_lang_init' );
 function sfml_lang_init() {
-	load_plugin_textdomain( 'sfml', false, basename( dirname( __FILE__ ) ) . '/languages/' );
+	load_plugin_textdomain( 'sfml', false, basename( dirname( SFML_FILE ) ) . '/languages/' );
 }
 
 
@@ -98,13 +42,33 @@ function sfml_lang_init() {
 /*																				 */
 /* ----------------------------------------------------------------------------- */
 
+// !Add rewrite rules
+
 add_action( 'setup_theme', 'sfml_rewrite' );
 function sfml_rewrite() {
-	add_rewrite_rule( 'login/?([\?&].*)?$', 'wp-login.php', 'top' );
-	$actions = array( 'postpass', 'logout', 'lostpassword', 'retrievepassword', 'resetpass', 'rp', 'register' );
-	foreach ( $actions as $action ) {
-		add_rewrite_rule( $action.'/?([\?&].*)?$', 'wp-login.php?action='.$action, 'top' );
+	if ( is_multisite() )
+		return;
+
+	$rules = sfml_rules();
+
+	foreach ( $rules as $action => $rule ) {
+		add_rewrite_rule( $action.'/?$', $rule, 'top' );
 	}
+}
+
+
+// !Return an array of action => url
+
+function sfml_rules() {
+	$actions = array( 'postpass', 'logout', 'lostpassword', 'retrievepassword', 'resetpass', 'rp', 'register' );
+	$rules = array(
+		'login' => 'wp-login.php',
+	);
+
+	foreach ( $actions as $action ) {
+		$rules[$action] = 'wp-login.php?action='.$action;
+	}
+	return $rules;
 }
 
 
@@ -125,6 +89,7 @@ if ( defined('SFML_ALLOW_LOGIN_ACCESS') && SFML_ALLOW_LOGIN_ACCESS )
 /* ----------------------------------------------------------------------------- */
 
 // !Site URL
+
 add_filter( 'site_url', 'sfml_site_url', 10, 4);
 function sfml_site_url( $url, $path, $scheme, $blog_id = null ) {
 	if ( ($scheme === 'login' || $scheme === 'login_post') && !empty($path) && is_string($path) && strpos($path, '..') === false && strpos($path, 'wp-login.php') !== false ) {
@@ -145,6 +110,7 @@ function sfml_site_url( $url, $path, $scheme, $blog_id = null ) {
 
 
 // !Network site URL
+
 add_filter( 'network_site_url', 'sfml_network_site_url', 10, 3);
 function sfml_network_site_url( $url, $path, $scheme ) {
 	if ( ($scheme === 'login' || $scheme === 'login_post') && !empty($path) && is_string($path) && strpos($path, '..') === false && strpos($path, 'wp-login.php') !== false ) {
@@ -158,6 +124,7 @@ function sfml_network_site_url( $url, $path, $scheme ) {
 
 
 // !Logout url: wp_logout_url() add the action param after using site_url()
+
 add_filter( 'logout_url', 'sfml_logout_url' );
 function sfml_logout_url( $link ) {
 	return sfml_login_to_action( $link, 'logout' );
@@ -165,6 +132,7 @@ function sfml_logout_url( $link ) {
 
 
 // !Forgot password url: lostpassword_url() add the action param after using site_url()
+
 add_filter( 'lostpassword_url', 'sfml_lostpass_url' );
 function sfml_lostpass_url( $link ) {
 	return sfml_login_to_action( $link, 'lostpassword' );
@@ -178,6 +146,7 @@ function sfml_lostpass_url( $link ) {
 /* ----------------------------------------------------------------------------- */
 
 // !Redirections are hard-coded
+
 add_filter('wp_redirect', 'sfml_redirect', 10, 2);
 function sfml_redirect( $location, $status ) {
 	if ( site_url( reset( explode( '?', $location ) ) ) == site_url( 'wp-login.php' ) )
@@ -189,11 +158,12 @@ function sfml_redirect( $location, $status ) {
 
 /* ----------------------------------------------------------------------------- */
 /*																				 */
-/*						Block access to wp-login.php							 */
+/*						Forbid access to wp-login.php							 */
 /*																				 */
 /* ----------------------------------------------------------------------------- */
 
 // !No, you won't use wp-login.php
+
 add_action( 'login_init', 'sfml_login_init', 0 );
 function sfml_login_init() {
 	$uri = !empty($GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI']) ? $GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI'] : (!empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
@@ -235,6 +205,7 @@ function sfml_set_path( $path ) {
 
 
 // !login?action=logout -> /logout
+
 function sfml_login_to_action( $link, $action ) {
 	if ( $link && strpos($link, '/'.$action) === false )
 		return str_replace(array('/login', '&amp;', '?amp;', '&'), array('/'.$action, '&', '?', '&amp;'), remove_query_arg('action', $link));
@@ -262,11 +233,19 @@ function set_url_scheme( $url, $scheme = null ) {
 			$scheme = ( is_ssl() ? 'https' : 'http' );
 	}
 
-	if ( 'relative' == $scheme )
-		$url = preg_replace( '#^.+://[^/]*#', '', $url );
-	else
-		$url = preg_replace( '#^.+://#', $scheme . '://', $url );
+	$url = trim( $url );
+	if ( $url[0] === '/' && $url[1] === '/' )
+		$url = 'http:' . $url;
+
+	if ( 'relative' == $scheme ) {
+		$url = ltrim( preg_replace( '#^\w+://[^/]*#', '', $url ) );
+	if ( $url[0] === '/' )
+		$url = '/' . ltrim($url , "/ \t\n\r\0\x0B" );
+	} else {
+		$url = preg_replace( '#^\w+://#', $scheme . '://', $url );
+	}
 
 	return apply_filters( 'set_url_scheme', $url, $scheme, $orig_scheme );
 }
 endif;
+/**/

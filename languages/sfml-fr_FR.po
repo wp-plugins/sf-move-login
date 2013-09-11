@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: w3p-acpt 0.3\n"
+"Project-Id-Version: sfml 0.2\n"
 "Report-msgid -Bugs-To: http://scri.in/contact/\n"
 "POT-Creation-Date: 2013-06-01 00:04+0100\n"
-"PO-Revision-Date: 2013-06-03 01:57+0100\n"
+"PO-Revision-Date: 2013-09-08 21:49+0100\n"
 "Last-Translator: Grégory Viguier <gregory@screenfeed.fr>\n"
 "Language-Team: fr_FR\n"
 "MIME-Version: 1.0\n"
@@ -17,22 +17,31 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-KeywordsList: __;_e\n"
 "Language: fr_FR\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.5.7\n"
 
 msgid  "Change your login url to http://example.com/login"
 msgstr "Changez l'url de votre page de connexion pour http://example.com/login"
 
-msgid  "Please Make sure to enable %s."
-msgstr "Assurez-vous d'activer les %s."
-
-msgid  "It seems your server configuration prevent the plugin to work properly. <i>SF Move Login</i> will not be activated."
-msgstr "Il semble que votre configuration serveur empêche l'extension de fonctionner correctement. <i>SF Move Login</i> ne sera pas activé."
+msgid  "No no no, the login form is not here."
+msgstr "Non non non, le formulaire de connexion ne se trouve pas ici."
 
 msgid  "<strong>SF Move Login</strong> has not been activated."
 msgstr "<strong>SF Move Login</strong> n'a pas été activé."
 
+msgid  "It seems your server configuration prevent the plugin to work properly. <i>SF Move Login</i> will not be activated."
+msgstr "Il semble que votre configuration serveur empêche l'extension de fonctionner correctement. <i>SF Move Login</i> ne sera pas activé."
+
+msgid  "It seems the url rewrite module is not activated on your server. <i>SF Move Login</i> will not be activated."
+msgstr "Il semble que le module de réécriture d'url n'est pas activé sur votre serveur. <i>SF Move Login</i> ne sera pas activé."
+
 msgid  "<i>SF Move Login</i> needs access to the %1$s file. Please visit the %2$s settings page and copy/paste the given code into the %1$s file."
 msgstr "<i>SF Move Login</i> a besoin d'accéder au fichier %1$s. Merci de vous rendre sur la page de réglages des %2$s et de copier/coller le code fourni dans le fichier %1$s."
 
-msgid  "No no no, the login form is not here."
-msgstr "Non non non, le formulaire de connexion ne se trouve pas ici."
+msgid  "Make sure to enable permalinks for ALL your blogs."
+msgstr "Assurez-vous d'activer les permaliens sur TOUS vos blogs."
+
+msgid  "If the plugin fails to add the new rewrite rules to your %1$s file on activation, add the following to your %1$s file in %2$s, replacing other %3$s rules if they exist, <strong>above</strong> the line reading %4$s:"
+msgstr "Si l'extension ne peut ajouter les nouvelles règles de réécriture à votre fichier %1$s à son activation, ajoutez les lignes suivantes à votre fichier %1$s dans %2$s, en remplacement des autres règles liées à %3$s si elles existent, <strong>au-dessus</strong> de la ligne %4$s&#160;:"
+
+msgid  "Please make sure to enable %s."
+msgstr "Assurez-vous d'activer les %s."
