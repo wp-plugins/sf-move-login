@@ -1,6 +1,6 @@
 === Move Login ===
 
-Contributors: GregLone, SecuPress
+Contributors: GregLone, SecuPress, juliobox
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UBY2MY2J4YB7J&item_number=SF-Move-Login
 Tags: login, logout, url, security
 Requires at least: 3.0
