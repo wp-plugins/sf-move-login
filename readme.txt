@@ -33,12 +33,11 @@ Please use the forum to report bugs, the plugin will be available on my site whe
 = Multisite =
 
 Yep!
-Note: not tested on subdomain installations.
 
 = Requirements =
 
-See some important informations in the "Installation" tab.
-Should work on IIS servers but not tested.
+* See some important informations in the "Installation" tab.
+* Should work on IIS servers but not tested.
 
 
 == Installation ==
@@ -78,6 +77,11 @@ Nothing to show.
 
 
 == Changelog ==
+
+= 1.0-RC1 =
+
+* 2013/09/12
+* Bugfix: activation for multisite with not writable .htaccess file, a wrong message was shown, preventing activation (was I drunk?).
 
 = 1.0-RC1 =
 

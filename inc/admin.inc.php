@@ -47,14 +47,10 @@ function sfml_activate() {
 			}
 			// Apache
 			else {
-				if ( got_mod_rewrite() ) {
-					$rules_written = sfml_insert_multisite_rewrite_rules( sfml_multisite_rewrite_rules() );
-					if ( !$rules_written ) {
-						wp_die( $die_msg . __('It seems the url rewrite module is not activated on your server. <i>SF Move Login</i> will not be activated.', 'sfml'), __('Error'), array('back_link' => true) );
-					}
-				} else {
-					$notices[] = 'not_got_mod_rewrite';
-				}
+				if ( got_mod_rewrite() )
+					sfml_insert_multisite_rewrite_rules( sfml_multisite_rewrite_rules() );
+				else
+					wp_die( $die_msg . __('It seems the url rewrite module is not activated on your server. <i>SF Move Login</i> will not be activated.', 'sfml'), __('Error'), array('back_link' => true) );
 			}
 		}
 

@@ -3,7 +3,7 @@
  * Plugin Name: SF Move Login
  * Plugin URI: http://www.screenfeed.fr
  * Description: Change your login url to http://example.com/login
- * Version: 1.0-RC1
+ * Version: 1.0-RC2
  * Author: Grégory Viguier
  * Author URI: http:www.screenfeed.fr/greg/
  * License: GPLv3
@@ -234,13 +234,13 @@ function set_url_scheme( $url, $scheme = null ) {
 	}
 
 	$url = trim( $url );
-	if ( $url[0] === '/' && $url[1] === '/' )
+	if ( substr( $url, 0, 2 ) === '//' )
 		$url = 'http:' . $url;
 
 	if ( 'relative' == $scheme ) {
 		$url = ltrim( preg_replace( '#^\w+://[^/]*#', '', $url ) );
-	if ( $url[0] === '/' )
-		$url = '/' . ltrim($url , "/ \t\n\r\0\x0B" );
+		if ( $url !== '' && $url[0] === '/' )
+			$url = '/' . ltrim($url , "/ \t\n\r\0\x0B" );
 	} else {
 		$url = preg_replace( '#^\w+://#', $scheme . '://', $url );
 	}
