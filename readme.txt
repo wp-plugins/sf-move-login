@@ -78,16 +78,17 @@ Nothing to show.
 
 == Changelog ==
 
-= 1.0-RC1 =
+= 1.0-RC2 =
 
 * 2013/09/12
 * Bugfix: activation for multisite with not writable .htaccess file, a wrong message was shown, preventing activation (was I drunk?).
+* tested on multisite with subdomain.
 
 = 1.0-RC1 =
 
 * 2013/09/11
 * New: Multisite support (must be "network" activated).
-* Enhancement: updated the set_url_scheme() function to the one in WP 3.7-alpha (used for WP < 3.4).
+* Enhancement: updated the set_url_scheme() function to the one in WP 3.6.1 (used for WP < 3.4).
 * Enhancement: better rewrite rules.
 * Bugfix: The plugin rewrite rules are now really removed from the .htaccess file on deactivation.
 
