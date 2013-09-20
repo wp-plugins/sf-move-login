@@ -3,12 +3,11 @@
  * Plugin Name: SF Move Login
  * Plugin URI: http://www.screenfeed.fr
  * Description: Change your login url to http://example.com/login
- * Version: 1.0-RC2
+ * Version: 1.0
  * Author: Grégory Viguier
  * Author URI: http:www.screenfeed.fr/greg/
  * License: GPLv3
  * License URI: http://www.screenfeed.fr/gpl-v3.txt
- * Require: WordPress 3.0
  * Network: true
  * Text Domain: sfml
  * Domain Path: /languages/
@@ -17,6 +16,7 @@
 if( !defined( 'ABSPATH' ) )
 	die( 'Cheatin\' uh?' );
 
+define( 'SFML_VERSION', '1.0' );
 define( 'SFML_FILE', __FILE__ );
 
 
@@ -170,8 +170,18 @@ function sfml_login_init() {
 	$uri = parse_url( $uri );
 	$uri = !empty($uri['path']) ? str_replace( '/', '', basename($uri['path']) ) : '';
 
-	if ( $uri === 'wp-login.php' )
-		wp_die(__('No no no, the login form is not here.', 'sfml'));
+	if ( $uri === 'wp-login.php' ) {
+		do_action( 'sfml_wp_login_error' );
+
+		if ( !did_action('sfml_wp_login_error') )
+			sfml_wp_login_error();
+	}
+}
+
+
+add_action( 'sfml_wp_login_error', 'sfml_wp_login_error' );
+function sfml_wp_login_error() {
+	wp_die( __('No no no, the login form is not here.', 'sfml') );
 }
 
 
