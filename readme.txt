@@ -1,10 +1,9 @@
 === Move Login ===
 
 Contributors: GregLone, SecuPress, juliobox
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UBY2MY2J4YB7J&item_number=SF-Move-Login
 Tags: login, logout, url, security
 Requires at least: 3.0
-Tested up to: 3.7-alpha-25343
+Tested up to: 3.7
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
@@ -77,6 +76,11 @@ Eventually, check out [my blog](http://www.screenfeed.fr/caravan-1-0/ "SF Move L
 
 
 == Changelog ==
+
+= 1.0.1 =
+
+* 2013/09/30
+* Very minor bug fix: messed author link -_-'
 
 = 1.0 =
 

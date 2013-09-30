@@ -3,9 +3,9 @@
  * Plugin Name: SF Move Login
  * Plugin URI: http://www.screenfeed.fr
  * Description: Change your login url to http://example.com/login
- * Version: 1.0
+ * Version: 1.0.1
  * Author: Grégory Viguier
- * Author URI: http:www.screenfeed.fr/greg/
+ * Author URI: http://www.screenfeed.fr/greg/
  * License: GPLv3
  * License URI: http://www.screenfeed.fr/gpl-v3.txt
  * Network: true
@@ -16,7 +16,7 @@
 if( !defined( 'ABSPATH' ) )
 	die( 'Cheatin\' uh?' );
 
-define( 'SFML_VERSION', '1.0' );
+define( 'SFML_VERSION', '1.0.1' );
 define( 'SFML_FILE', __FILE__ );
 
 
