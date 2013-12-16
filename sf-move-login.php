@@ -1,9 +1,9 @@
 <?php
 /*
  * Plugin Name: SF Move Login
- * Plugin URI: http://www.screenfeed.fr
- * Description: Change your login url to http://example.com/login
- * Version: 1.0.1
+ * Plugin URI: http://www.screenfeed.fr/caravan-1-1/
+ * Description: Change your login url
+ * Version: 1.1
  * Author: Grégory Viguier
  * Author URI: http://www.screenfeed.fr/greg/
  * License: GPLv3
@@ -16,76 +16,128 @@
 if( !defined( 'ABSPATH' ) )
 	die( 'Cheatin\' uh?' );
 
-define( 'SFML_VERSION', '1.0.1' );
-define( 'SFML_FILE', __FILE__ );
+if ( version_compare( $GLOBALS['wp_version'], '3.1', '<' ) )
+	return;
 
 
-if ( is_admin() && !(defined('DOING_AJAX') && DOING_AJAX) )
-	include( plugin_dir_path( SFML_FILE ) . 'inc/admin.inc.php' );
-
-
+/* !---------------------------------------------------------------------------- */
+/* !	INIT																	 */
 /* ----------------------------------------------------------------------------- */
-/*																				 */
-/*								i18n support									 */
-/*																				 */
+
+define( 'SFML_VERSION',			'1.1' );
+define( 'SFML_NOOP_VERSION',	'1.0-RC6' );
+define( 'SFML_FILE',			__FILE__ );
+define( 'SFML_PLUGIN_BASEDIR',	basename( dirname( SFML_FILE ) ) );
+define( 'SFML_PLUGIN_BASENAME',	plugin_basename( SFML_FILE ) );
+define( 'SFML_PLUGIN_URL',		plugin_dir_url( SFML_FILE ) );
+define( 'SFML_PLUGIN_DIR',		plugin_dir_path( SFML_FILE ) );
+
+
+/* !---------------------------------------------------------------------------- */
+/* !	INCLUDES																 */
+/* ----------------------------------------------------------------------------- */
+
+add_action( 'plugins_loaded', 'sfml_init' );
+function sfml_init() {
+	// Stuff for Noop
+	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && !function_exists('sfml_noop_init') )
+		include( SFML_PLUGIN_DIR . 'inc/noop.inc.php' );
+
+	// Administration
+	if ( sfml_is_admin() && !function_exists('sfml_write_rules') )
+		include( SFML_PLUGIN_DIR . 'inc/admin.inc.php' );
+
+	// Plugins List: activation, deactivation, uninstall, admin notices, plugin/Noop links, Noop download and infos.
+	global $pagenow;
+	if ( is_admin() && ( $pagenow == 'plugins.php' || $pagenow == 'update.php' || $pagenow == 'plugin-install.php' ) )
+		include( SFML_PLUGIN_DIR . 'inc/plugins-list.inc.php' );
+}
+
+
+/* !---------------------------------------------------------------------------- */
+/* !	SHORTHANDS																 */
+/* ----------------------------------------------------------------------------- */
+
+
+if ( !function_exists('sf_can_use_noop') ):
+function sf_can_use_noop( $version = '100' ) {
+	return defined('NOOP_DIR') && defined('NOOP_VERSION') && version_compare(NOOP_VERSION, $version, '>=');
+}
+endif;
+
+
+function sfml_is_admin() {
+	return is_admin() && !(defined('DOING_AJAX') && DOING_AJAX);
+}
+
+
+/* !---------------------------------------------------------------------------- */
+/* !	I18N SUPPORT															 */
 /* ----------------------------------------------------------------------------- */
 
 add_action( 'init', 'sfml_lang_init' );
 function sfml_lang_init() {
-	load_plugin_textdomain( 'sfml', false, basename( dirname( SFML_FILE ) ) . '/languages/' );
+	load_plugin_textdomain( 'sfml', false, SFML_PLUGIN_BASEDIR . '/languages/' );
 }
 
 
-/* ----------------------------------------------------------------------------- */
-/*																				 */
-/*								Rewrite rules									 */
-/*																				 */
+/* !---------------------------------------------------------------------------- */
+/* !	OPTIONS																	 */
 /* ----------------------------------------------------------------------------- */
 
-// !Add rewrite rules
+// !Get the slugs
 
-add_action( 'setup_theme', 'sfml_rewrite' );
-function sfml_rewrite() {
-	if ( is_multisite() )
-		return;
-
-	$rules = sfml_rules();
-
-	foreach ( $rules as $action => $rule ) {
-		add_rewrite_rule( $action.'/?$', $rule, 'top' );
+function sfml_get_slugs() {
+	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && class_exists('Noop_Options') )
+		return Noop_Options::get_instance( sfml_noop_params() )->get_option( 'slugs' );
+	else {
+		static $slugs = array();	// Keep the same slugs all along.
+		if ( empty($slugs) )
+			$slugs = apply_filters( 'sfml_slugs', array(
+				'postpass'			=> 'postpass',
+				'logout'			=> 'logout',
+				'lostpassword'		=> 'lostpassword',
+				'retrievepassword'	=> 'retrievepassword',
+				'resetpass'			=> 'resetpass',
+				'rp'				=> 'rp',
+				'register'			=> 'register',
+				'login'				=> 'login',
+			) );
+		return $slugs;
 	}
 }
 
 
-// !Return an array of action => url
+// !Access to wp-login.php
 
-function sfml_rules() {
-	$actions = array( 'postpass', 'logout', 'lostpassword', 'retrievepassword', 'resetpass', 'rp', 'register' );
-	$rules = array(
-		'login' => 'wp-login.php',
-	);
-
-	foreach ( $actions as $action ) {
-		$rules[$action] = 'wp-login.php?action='.$action;
-	}
-	return $rules;
+function sfml_deny_wp_login_access() {
+	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && class_exists('Noop_Options') )
+		return Noop_Options::get_instance( sfml_noop_params() )->get_option( 'deny_wp_login_access' );
+	else
+		return apply_filters( 'sfml_deny_wp_login_access', 1 );	// 1: error message, 2: 404, 3: home
 }
 
 
-/* ----------------------------------------------------------------------------- */
-/*																				 */
-/*									Bypass										 */
-/*																				 */
+// !Access to the administration area
+
+function sfml_deny_admin_access() {
+	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && class_exists('Noop_Options') )
+		return Noop_Options::get_instance( sfml_noop_params() )->get_option( 'deny_admin_access' );
+	else
+		return apply_filters( 'sfml_deny_admin_access', 0 );	// 0: nothing, 1: error message, 2: 404, 3: home
+}
+
+
+/* !---------------------------------------------------------------------------- */
+/* !	EMERGENCY BYPASS														 */
 /* ----------------------------------------------------------------------------- */
 
 if ( defined('SFML_ALLOW_LOGIN_ACCESS') && SFML_ALLOW_LOGIN_ACCESS )
 	return;
 
 
-/* ----------------------------------------------------------------------------- */
-/*																				 */
-/*									Filter urls									 */
-/*																				 */
+/* !---------------------------------------------------------------------------- */
+/* !	FILTER URLS																 */
 /* ----------------------------------------------------------------------------- */
 
 // !Site URL
@@ -139,12 +191,6 @@ function sfml_lostpass_url( $link ) {
 }
 
 
-/* ----------------------------------------------------------------------------- */
-/*																				 */
-/*								Redirections									 */
-/*																				 */
-/* ----------------------------------------------------------------------------- */
-
 // !Redirections are hard-coded
 
 add_filter('wp_redirect', 'sfml_redirect', 10, 2);
@@ -156,16 +202,16 @@ function sfml_redirect( $location, $status ) {
 }
 
 
+/* !---------------------------------------------------------------------------- */
+/* !	IF NOT CONNECTED, DENY ACCESS TO WP-LOGIN.PHP							 */
 /* ----------------------------------------------------------------------------- */
-/*																				 */
-/*						Forbid access to wp-login.php							 */
-/*																				 */
-/* ----------------------------------------------------------------------------- */
-
-// !No, you won't use wp-login.php
 
 add_action( 'login_init', 'sfml_login_init', 0 );
 function sfml_login_init() {
+	// If the user is logged in, do nothing, lets WP redirect this user to the administration area.
+	if ( is_user_logged_in() )
+		return;
+
 	$uri = !empty($GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI']) ? $GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI'] : (!empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
 	$uri = parse_url( $uri );
 	$uri = !empty($uri['path']) ? str_replace( '/', '', basename($uri['path']) ) : '';
@@ -181,17 +227,67 @@ function sfml_login_init() {
 
 add_action( 'sfml_wp_login_error', 'sfml_wp_login_error' );
 function sfml_wp_login_error() {
-	wp_die( __('No no no, the login form is not here.', 'sfml') );
+	$do = sfml_deny_wp_login_access();
+	switch( $do ) {
+		case 2:
+			$redirect = $GLOBALS['wp_rewrite']->using_permalinks() ? home_url('404') : add_query_arg( 'p', '404', home_url() );
+			wp_safe_redirect( esc_url( apply_filters( 'sfml_404_error_page', $redirect ) ) );
+			exit;
+		case 3:
+			wp_safe_redirect( home_url() );
+			exit;
+		default:
+			wp_die( __('No no no, the login form is not here.', 'sfml') );
+	}
 }
 
 
-/* ----------------------------------------------------------------------------- */
-/*																				 */
-/*								Utilities										 */
-/*																				 */
+/* !---------------------------------------------------------------------------- */
+/* !	IF NOT CONNECTED, DO NOT REDIRECT FROM ADMIN AREA TO WP-LOGIN.PHP		 */
 /* ----------------------------------------------------------------------------- */
 
+add_action('after_setup_theme', 'sfml_maybe_die_before_admin_redirect');
+function sfml_maybe_die_before_admin_redirect() {
+	// If it's not the administration area, or if it's an ajax call, no need to go further.
+	if ( !sfml_is_admin() )
+		return;
+
+	$scheme = is_user_admin() ? 'logged_in' : apply_filters( 'auth_redirect_scheme', '' );
+
+	if ( !wp_validate_auth_cookie( '', $scheme) && sfml_deny_admin_access() ) {
+		do_action( 'sfml_wp_admin_error' );
+
+		if ( !did_action('sfml_wp_admin_error') )
+			sfml_wp_admin_error();
+	}
+}
+
+
+add_action( 'sfml_wp_admin_error', 'sfml_wp_admin_error' );
+function sfml_wp_admin_error() {
+	$do = sfml_deny_admin_access();
+	switch( $do ) {
+		case 1:
+			wp_die( __('Cheatin&#8217; uh?') );
+		case 2:
+			$redirect = $GLOBALS['wp_rewrite']->using_permalinks() ? home_url('404') : add_query_arg( 'p', '404', home_url() );
+			wp_safe_redirect( esc_url( apply_filters( 'sfml_404_error_page', $redirect ) ) );
+			exit;
+		case 3:
+			wp_safe_redirect( home_url() );
+			exit;
+	}
+}
+
+
+/* !---------------------------------------------------------------------------- */
+/* !	UTILITIES																 */
+/* ----------------------------------------------------------------------------- */
+
+// !Construct the url
+
 function sfml_set_path( $path ) {
+	$slugs = sfml_get_slugs();
 	// Action
 	$parsed_path = parse_url( $path );
 	if ( !empty( $parsed_path['query'] ) ) {
@@ -201,14 +297,21 @@ function sfml_set_path( $path ) {
 		if ( isset( $params['key'] ) )
 			$action = 'resetpass';
 
-		if ( !in_array( $action, array( 'postpass', 'logout', 'lostpassword', 'retrievepassword', 'resetpass', 'rp', 'register', 'login' ), true ) && false === has_filter( 'login_form_' . $action ) )
+		if ( !isset($slugs[$action]) && false === has_filter( 'login_form_' . $action ) )
 			$action = 'login';
 	} else
 		$action = 'login';
 
 	// Path
-	$path = str_replace('wp-login.php', $action, $path);
-	$path = remove_query_arg('action', $path);
+	if ( isset($slugs[$action]) ) {
+		$path = str_replace('wp-login.php', $slugs[$action], $path);
+		$path = remove_query_arg('action', $path);
+	}
+	else {	// In case of a custom action
+		$path = str_replace('wp-login.php', $slugs['login'], $path);
+		$path = remove_query_arg('action', $path);
+		$path = add_query_arg('action', $action, $path);
+	}
 
 	return '/' . ltrim( $path, '/' );
 }
@@ -217,17 +320,31 @@ function sfml_set_path( $path ) {
 // !login?action=logout -> /logout
 
 function sfml_login_to_action( $link, $action ) {
-	if ( $link && strpos($link, '/'.$action) === false )
-		return str_replace(array('/login', '&amp;', '?amp;', '&'), array('/'.$action, '&', '?', '&amp;'), remove_query_arg('action', $link));
+	$slugs = sfml_get_slugs();
+	$need_action_param = false;
+
+	if ( isset($slugs[$action]) ) {
+		$slug = $slugs[$action];
+	}
+	else {	// Shouldn't happen, because this function is not used in this case.
+		$slug = $slugs['login'];
+
+		if ( false === has_filter( 'login_form_' . $action ) )
+			$action = 'login';
+		else		// In case of a custom action
+			$need_action_param = true;
+	}
+
+	if ( $link && strpos($link, '/'.$slug) === false ) {
+		$link = str_replace(array('/'.$slugs['login'], '&amp;', '?amp;', '&'), array('/'.$slug, '&', '?', '&amp;'), remove_query_arg('action', $link));
+		if ( $need_action_param )		// In case of a custom action, shouldn't happen.
+			$link = add_query_arg('action', $action, $link);
+	}
 	return $link;
 }
 
 
-/* ----------------------------------------------------------------------------- */
-/*																				 */
-/*								For WP < 3.4									 */
-/*																				 */
-/* ----------------------------------------------------------------------------- */
+// !For WP < 3.4
 
 if ( !function_exists('set_url_scheme') ):
 function set_url_scheme( $url, $scheme = null ) {

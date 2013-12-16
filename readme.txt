@@ -2,13 +2,13 @@
 
 Contributors: GregLone, SecuPress, juliobox
 Tags: login, logout, url, security
-Requires at least: 3.0
-Tested up to: 3.7
+Requires at least: 3.1
+Tested up to: 3.9-alpha
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
 
-Change your login url for http://example.com/login and stop login brute force attempts.
+Change your login url for something like http://example.com/login and stop login brute force attempts.
 
 
 == Description ==
@@ -17,8 +17,6 @@ This plugin forbids access to **http://example.com/wp-login.php** and creates ne
 
 This is a great way to limit bots trying to brute force your login (trying to guess your login and password). Of course, the new urls are easier to remember too.
 The plugin is small, fast, and does not create new security vulnerabilities like some other plugins I've seen.
-
-No settings: activate, it works.
 
 Also remember: the use of this plugin does NOT exempt you to use a strong password. Moreover, never use "admin" as login, this is the first attempt for bots.
 
@@ -35,14 +33,14 @@ The plugin must be activated from your network.
 = Requirements =
 
 * See some important informations in the "Installation" tab.
-* Should work on IIS servers but not tested.
+* Should work on IIS7+ servers but not tested.
 
 
 == Installation ==
 
 1. Extract the plugin folder from the downloaded ZIP file.
 1. Upload the `sf-move-login` folder to your `/wp-content/plugins/` directory.
-1. Enable url rewriting in the permalinks settings page.
+1. If you're not using the MultiSite feature, enable url rewriting in the permalinks settings page.
 1. If you have another plugin that redirects **http://example.com/login** to **http://example.com/wp-login.php** (a short-links plugin for example), disable it or remove the redirection, otherwise they will conflict and you'll be locked out. See the faq in case you're not able to reach the login page (make sure to have a ftp access to your site).
 1. Activate the plugin from the "Plugins" page.
 1. If the plugin can't write your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access.
@@ -52,7 +50,9 @@ The plugin must be activated from your network.
 
 = Can I set my own urls? =
 
-Nop, sorry. I prefer keep the plugin as simple as possible. May be I'll consider it for a future version.
+Since the version 1.1, yes. You have 2 ways to do that:
+1. Use the filter `sfml_slugs` and return an array containing your custom slugs.
+1. Install another plugin, called Noop, to enable a new settings page. Noop is a framework I developed, to easily create settings pages, and to handle options. After you install Move Login, it will provide to you a link to download Noop.
 
 = I'm locked out! I can't access the login page! =
 
@@ -60,13 +60,9 @@ You're screwed! No, I'm kidding, but you need a ftp access to your site. When lo
 
 = Does it really work for Multisite? =
 
-Yes. Each blog has its own login page. The plugin must be network activated. Make sure permalinks are activated for ALL your blogs. In case the plugin fails to add the rewrite rules, there's a new "settings" page in your network admin area: "Settings" -> "SF Move Login". You'll be able to copy/paste the needed lines to your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access.
+Yes. Each blog has its own login page. The plugin must be activated from the network. In case the plugin fails to add the rewrite rules, there's a new "settings" page in your network admin area: "Settings" -> "SF Move Login". You'll be able to copy/paste the needed lines to your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access.
 
-= I've enabled the Multisite feature on my site, but the plugin does not work anymore :( =
-
-Multisite and monosite installations does not have the same rewrite rules. Simply deactivate the plugin, and "network" activate it again. The new rules will be created.
-
-Eventually, check out [my blog](http://www.screenfeed.fr/caravan-1-0/ "SF Move Login version 1.0 Announcement") for more infos, help, or bug reports (sorry guys, it's in french, but feel free to leave a comment in english).
+Eventually, try the [WordPress support forum](http://wordpress.org/support/plugin/sf-move-login) (best), or check out [my blog](http://www.screenfeed.fr/caravan-1-0/ "SF Move Login version 1.0 Announcement") for more infos, help, or bug reports (sorry guys, it's in french, but feel free to leave a comment in english).
 
 
 == Screenshots ==
@@ -77,10 +73,22 @@ Eventually, check out [my blog](http://www.screenfeed.fr/caravan-1-0/ "SF Move L
 
 == Changelog ==
 
+= 1.1 =
+
+* 2013/12/16
+* Code refactoring.
+* Requires WordPress 3.1 at least.
+* New: the URLs can be customized, with a filter or a settings page. The settings page needs another plugin to be installed, it's a framework I made (Noop). See the Move Login row in your plugins list, there's a new link.
+* New: support for custom actions in the login form (added by other plugins).
+* New: choose what to do when someone attempts to acces the old login page.
+* New: choose what to do when someone attempts to acces the administration area.
+* New: enabling permalinks is not required anymore.
+* Todo: provide rewrite rules for Nginx systems.
+
 = 1.0.1 =
 
 * 2013/09/30
-* Very minor bug fix: messed author link -_-'
+* Very minor bug fix: messed the author link -_-'
 
 = 1.0 =
 
