@@ -67,8 +67,7 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 == Screenshots ==
 
-1. "Settings" -> "Permalinks": the rewrite rules in case the .htaccess file is not writable.
-2. "Network" -> "Settings" -> "SF Move Login": the rewrite rules for multisite installations.
+1. The settings page.
 
 
 == Changelog ==
