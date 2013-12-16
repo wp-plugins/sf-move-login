@@ -62,7 +62,7 @@ You're screwed! No, I'm kidding, but you need a ftp access to your site. When lo
 
 Yes. Each blog has its own login page. The plugin must be activated from the network. In case the plugin fails to add the rewrite rules, there's a new "settings" page in your network admin area: "Settings" -> "SF Move Login". You'll be able to copy/paste the needed lines to your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access.
 
-Eventually, try the [WordPress support forum](http://wordpress.org/support/plugin/sf-move-login) (best), or check out [my blog](http://www.screenfeed.fr/caravan-1-0/ "SF Move Login version 1.0 Announcement") for more infos, help, or bug reports (sorry guys, it's in french, but feel free to leave a comment in english).
+Eventually, try the [WordPress support forum](http://wordpress.org/support/plugin/sf-move-login) (best), or check out [my blog](http://www.screenfeed.fr/caravan-1-1/ "SF Move Login version 1.0 Announcement") for more infos, help, or bug reports (sorry guys, it's in french, but feel free to leave a comment in english).
 
 
 == Screenshots ==
