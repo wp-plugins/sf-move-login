@@ -72,6 +72,11 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 == Changelog ==
 
+= 1.1.1 =
+
+* 2013/12/17
+* Bugfix.
+
 = 1.1 =
 
 * 2013/12/16

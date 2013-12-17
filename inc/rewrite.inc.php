@@ -33,7 +33,7 @@ function sfml_write_rules( $rules = null ) {
 	// Noop
 	if ( sf_can_use_noop( SFML_NOOP_VERSION ) ) {
 		// Make sure we have the filters for Noop
-		if ( !function_exists('sfml_noop_init') )
+		if ( !function_exists('sfml_noop_params') )
 			include( SFML_PLUGIN_DIR . 'inc/noop.inc.php' );
 		// Make sure we have Noop
 		if ( !function_exists('noop_includes') )

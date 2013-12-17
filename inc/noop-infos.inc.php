@@ -4,8 +4,8 @@ if( !defined( 'ABSPATH' ) )
 
 /*
  * To include this file, tou can use this check:
- *  if ( is_admin() && ( $pagenow == 'plugins.php' || $pagenow == 'update.php' || $pagenow == 'plugin-install.php' ) ) {
- *  	include( 'path/to/plugins-list.inc.php' );
+ *  if ( is_admin() && ( $pagenow == 'plugins.php' || $pagenow == 'update-core.php' || $pagenow == 'update.php' || $pagenow == 'plugin-install.php' ) ) {
+ *  	include( 'path/to/noop-infos.inc.php' );
  *  }
  */
 

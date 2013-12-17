@@ -1,9 +1,9 @@
 <?php
 /*
  * Plugin Name: SF Move Login
- * Plugin URI: http://www.screenfeed.fr/caravan-1-1/
+ * Plugin URI: http://www.screenfeed.fr/caravan-1-0/
  * Description: Change your login url
- * Version: 1.1
+ * Version: 1.1.1
  * Author: Grégory Viguier
  * Author URI: http://www.screenfeed.fr/greg/
  * License: GPLv3
@@ -24,8 +24,8 @@ if ( version_compare( $GLOBALS['wp_version'], '3.1', '<' ) )
 /* !	INIT																	 */
 /* ----------------------------------------------------------------------------- */
 
-define( 'SFML_VERSION',			'1.1' );
-define( 'SFML_NOOP_VERSION',	'1.0-RC6' );
+define( 'SFML_VERSION',			'1.1.1' );
+define( 'SFML_NOOP_VERSION',	'1.0' );
 define( 'SFML_FILE',			__FILE__ );
 define( 'SFML_PLUGIN_BASEDIR',	basename( dirname( SFML_FILE ) ) );
 define( 'SFML_PLUGIN_BASENAME',	plugin_basename( SFML_FILE ) );
@@ -40,7 +40,7 @@ define( 'SFML_PLUGIN_DIR',		plugin_dir_path( SFML_FILE ) );
 add_action( 'plugins_loaded', 'sfml_init' );
 function sfml_init() {
 	// Stuff for Noop
-	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && !function_exists('sfml_noop_init') )
+	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && !function_exists('sfml_noop_params') )
 		include( SFML_PLUGIN_DIR . 'inc/noop.inc.php' );
 
 	// Administration
@@ -49,7 +49,7 @@ function sfml_init() {
 
 	// Plugins List: activation, deactivation, uninstall, admin notices, plugin/Noop links, Noop download and infos.
 	global $pagenow;
-	if ( is_admin() && ( $pagenow == 'plugins.php' || $pagenow == 'update.php' || $pagenow == 'plugin-install.php' ) )
+	if ( is_admin() && ( $pagenow == 'plugins.php' || $pagenow == 'update-core.php' || $pagenow == 'update.php' || $pagenow == 'plugin-install.php' ) )
 		include( SFML_PLUGIN_DIR . 'inc/plugins-list.inc.php' );
 }
 
