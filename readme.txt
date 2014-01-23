@@ -84,8 +84,8 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 * Requires WordPress 3.1 at least.
 * New: the URLs can be customized, with a filter or a settings page. The settings page needs another plugin to be installed, it's a framework I made (Noop). See the Move Login row in your plugins list, there's a new link.
 * New: support for custom actions in the login form (added by other plugins).
-* New: choose what to do when someone attempts to acces the old login page.
-* New: choose what to do when someone attempts to acces the administration area.
+* New: choose what to do when someone attempts to access the old login page.
+* New: choose what to do when someone attempts to access the administration area.
 * New: enabling permalinks is not required anymore.
 * Todo: provide rewrite rules for Nginx systems.
 
