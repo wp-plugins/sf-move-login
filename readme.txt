@@ -34,13 +34,13 @@ The plugin must be activated from your network.
 
 * See some important informations in the "Installation" tab.
 * Should work on IIS7+ servers but not tested.
+* If you need the settings page, you'll have to install my framework "Noop" (the link will be provided).
 
 
 == Installation ==
 
 1. Extract the plugin folder from the downloaded ZIP file.
 1. Upload the `sf-move-login` folder to your `/wp-content/plugins/` directory.
-1. If you're not using the MultiSite feature, enable url rewriting in the permalinks settings page.
 1. If you have another plugin that redirects **http://example.com/login** to **http://example.com/wp-login.php** (a short-links plugin for example), disable it or remove the redirection, otherwise they will conflict and you'll be locked out. See the faq in case you're not able to reach the login page (make sure to have a ftp access to your site).
 1. Activate the plugin from the "Plugins" page.
 1. If the plugin can't write your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access.
@@ -51,6 +51,7 @@ The plugin must be activated from your network.
 = Can I set my own urls? =
 
 Since the version 1.1, yes. You have 2 ways to do that:
+
 1. Use the filter `sfml_slugs` and return an array containing your custom slugs.
 1. Install another plugin, called Noop, to enable a new settings page. Noop is a framework I developed, to easily create settings pages, and to handle options. After you install Move Login, it will provide to you a link to download Noop.
 
