@@ -3,7 +3,7 @@
 Contributors: GregLone, SecuPress, juliobox
 Tags: login, logout, url, security
 Requires at least: 3.1
-Tested up to: 3.9-alpha
+Tested up to: 3.9
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
@@ -63,7 +63,7 @@ You're screwed! No, I'm kidding, but you need a ftp access to your site. When lo
 
 Yes. Each blog has its own login page. The plugin must be activated from the network. In case the plugin fails to add the rewrite rules, there's a new "settings" page in your network admin area: "Settings" -> "SF Move Login". You'll be able to copy/paste the needed lines to your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access.
 
-Eventually, try the [WordPress support forum](http://wordpress.org/support/plugin/sf-move-login) (best), or check out [my blog](http://www.screenfeed.fr/caravan-1-1/ "SF Move Login version 1.0 Announcement") for more infos, help, or bug reports (sorry guys, it's in french, but feel free to leave a comment in english).
+Eventually, try the [WordPress support forum](http://wordpress.org/support/plugin/sf-move-login) (best), or check out [my blog](http://www.screenfeed.fr/caravan-1-1/ "SF Move Login version 1.1 Announcement") for more infos, help, or bug reports (sorry guys, it's in french, but feel free to leave a comment in english).
 
 
 == Screenshots ==
@@ -72,6 +72,15 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 
 == Changelog ==
+
+= 1.1.2 =
+
+* 2014/03/29
+* Bugfix: don't block users accessing the script `admin-post.php`.
+* Changed i18n domain.
+* If Noop is not installed, add a link in the "settings" page.
+* Added a direct link to download Noop, some users may not be able to install plugins directly.
+* Code improvements and small bugfixes.
 
 = 1.1.1 =
 

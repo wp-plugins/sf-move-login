@@ -24,6 +24,7 @@ function sfml_noop_params() {
 		'plugin_logo_url'	=> SFML_PLUGIN_URL . 'res/icon.png',
 
 		'support_image'		=> SFML_PLUGIN_URL . 'res/support.jpg',
+		'support_url'		=> 'https://wordpress.org/support/plugin/sf-move-login',
 	);
 
 	if ( is_multisite() ) {
@@ -43,6 +44,7 @@ function sfml_noop_params() {
 // !Default options
 
 add_filter( 'sfml_default_options', 'sfml_default_options' );
+
 function sfml_default_options( $options = array() ) {
 	return array_merge( $options, array(
 		'slugs.postpass'			=> 'postpass',
@@ -62,6 +64,7 @@ function sfml_default_options( $options = array() ) {
 // !Escape functions (display)
 
 add_filter( 'sfml_escape_functions', 'sfml_escape_functions' );
+
 function sfml_escape_functions( $functions = array() ) {
 	$func_sanitize_title	= array( 'function'  => 'sanitize_title', 'params' => array( '', 'display' ) );
 	$func_intval			= array( 'function'  => 'intval' );
@@ -84,6 +87,7 @@ function sfml_escape_functions( $functions = array() ) {
 // !Sanitization functions (save)
 
 add_filter( 'sfml_sanitization_functions', 'sfml_sanitization_functions' );
+
 function sfml_sanitization_functions( $functions = array() ) {
 	$func_sanitize_title	= array( 'function'  => 'sanitize_title' );
 	$func_intval			= array( 'function'  => 'intval' );
@@ -106,6 +110,7 @@ function sfml_sanitization_functions( $functions = array() ) {
 // !Validate Settings on update
 
 add_filter( 'sfml_validate_settings', 'sfml_validate_settings', 10, 3 );
+
 function sfml_validate_settings( $opts, $default_options, $context ) {
 	if ( strpos($context, 'save-') === 0 ) {
 		$slugs = Noop_Options::get_sub_options( 'slugs', $opts );
@@ -135,9 +140,9 @@ function sfml_validate_settings( $opts, $default_options, $context ) {
 			// Trigger errors
 			if ( $context == 'save-form' ) {
 				if ( $nbr_forbidden = count($forbidden) )
-					add_settings_error( 'sfml_settings', 'forbidden-slugs', sprintf( _n("The slug %s is forbidden.", "The slugs %s are forbidden.", $nbr_forbidden, 'sfml'), wp_sprintf('<code>%l</code>', $forbidden) ) );
+					add_settings_error( 'sfml_settings', 'forbidden-slugs', sprintf( _n("The slug %s is forbidden.", "The slugs %s are forbidden.", $nbr_forbidden, 'sf-move-login'), wp_sprintf('<code>%l</code>', $forbidden) ) );
 				if ( $error )
-					add_settings_error( 'sfml_settings', 'duplicates-slugs', __("The links can't have the same slugs.", 'sfml') );
+					add_settings_error( 'sfml_settings', 'duplicates-slugs', __("The links can't have the same slugs.", 'sf-move-login') );
 			}
 
 			// Write the new rules (they're not saved in the db yet)

@@ -1,15 +1,15 @@
 <?php
 /*
  * Plugin Name: SF Move Login
- * Plugin URI: http://www.screenfeed.fr/caravan-1-0/
+ * Plugin URI: http://www.screenfeed.fr/caravan-1-1/
  * Description: Change your login url
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Grégory Viguier
  * Author URI: http://www.screenfeed.fr/greg/
  * License: GPLv3
  * License URI: http://www.screenfeed.fr/gpl-v3.txt
  * Network: true
- * Text Domain: sfml
+ * Text Domain: sf-move-login
  * Domain Path: /languages/
  */
 
@@ -24,7 +24,7 @@ if ( version_compare( $GLOBALS['wp_version'], '3.1', '<' ) )
 /* !	INIT																	 */
 /* ----------------------------------------------------------------------------- */
 
-define( 'SFML_VERSION',			'1.1.1' );
+define( 'SFML_VERSION',			'1.1.2' );
 define( 'SFML_NOOP_VERSION',	'1.0' );
 define( 'SFML_FILE',			__FILE__ );
 define( 'SFML_PLUGIN_BASEDIR',	basename( dirname( SFML_FILE ) ) );
@@ -38,6 +38,7 @@ define( 'SFML_PLUGIN_DIR',		plugin_dir_path( SFML_FILE ) );
 /* ----------------------------------------------------------------------------- */
 
 add_action( 'plugins_loaded', 'sfml_init' );
+
 function sfml_init() {
 	// Stuff for Noop
 	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && !function_exists('sfml_noop_params') )
@@ -55,29 +56,13 @@ function sfml_init() {
 
 
 /* !---------------------------------------------------------------------------- */
-/* !	SHORTHANDS																 */
-/* ----------------------------------------------------------------------------- */
-
-
-if ( !function_exists('sf_can_use_noop') ):
-function sf_can_use_noop( $version = '100' ) {
-	return defined('NOOP_DIR') && defined('NOOP_VERSION') && version_compare(NOOP_VERSION, $version, '>=');
-}
-endif;
-
-
-function sfml_is_admin() {
-	return is_admin() && !(defined('DOING_AJAX') && DOING_AJAX);
-}
-
-
-/* !---------------------------------------------------------------------------- */
 /* !	I18N SUPPORT															 */
 /* ----------------------------------------------------------------------------- */
 
 add_action( 'init', 'sfml_lang_init' );
+
 function sfml_lang_init() {
-	load_plugin_textdomain( 'sfml', false, SFML_PLUGIN_BASEDIR . '/languages/' );
+	load_plugin_textdomain( 'sf-move-login', false, SFML_PLUGIN_BASEDIR . '/languages/' );
 }
 
 
@@ -88,7 +73,7 @@ function sfml_lang_init() {
 // !Get the slugs
 
 function sfml_get_slugs() {
-	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && class_exists('Noop_Options') )
+	if ( function_exists('sfml_noop_params') && class_exists('Noop_Options') )
 		return Noop_Options::get_instance( sfml_noop_params() )->get_option( 'slugs' );
 	else {
 		static $slugs = array();	// Keep the same slugs all along.
@@ -111,7 +96,7 @@ function sfml_get_slugs() {
 // !Access to wp-login.php
 
 function sfml_deny_wp_login_access() {
-	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && class_exists('Noop_Options') )
+	if ( function_exists('sfml_noop_params') && class_exists('Noop_Options') )
 		return Noop_Options::get_instance( sfml_noop_params() )->get_option( 'deny_wp_login_access' );
 	else
 		return apply_filters( 'sfml_deny_wp_login_access', 1 );	// 1: error message, 2: 404, 3: home
@@ -121,11 +106,28 @@ function sfml_deny_wp_login_access() {
 // !Access to the administration area
 
 function sfml_deny_admin_access() {
-	if ( sf_can_use_noop( SFML_NOOP_VERSION ) && class_exists('Noop_Options') )
+	if ( function_exists('sfml_noop_params') && class_exists('Noop_Options') )
 		return Noop_Options::get_instance( sfml_noop_params() )->get_option( 'deny_admin_access' );
 	else
 		return apply_filters( 'sfml_deny_admin_access', 0 );	// 0: nothing, 1: error message, 2: 404, 3: home
 }
+
+
+/* --------------------------------------------------------------------------------- */
+/* !TOOLS																			 */
+/* --------------------------------------------------------------------------------- */
+
+function sfml_is_admin() {
+	global $pagenow;
+	return is_admin() && !( (defined('DOING_AJAX') && DOING_AJAX) || ($pagenow == 'admin-post.php' && !empty($_REQUEST['action'])) );
+}
+
+
+if ( !function_exists('sf_can_use_noop') ):
+function sf_can_use_noop( $version = '100' ) {
+	return defined('NOOP_DIR') && defined('NOOP_VERSION') && version_compare(NOOP_VERSION, $version, '>=');
+}
+endif;
 
 
 /* !---------------------------------------------------------------------------- */
@@ -143,6 +145,7 @@ if ( defined('SFML_ALLOW_LOGIN_ACCESS') && SFML_ALLOW_LOGIN_ACCESS )
 // !Site URL
 
 add_filter( 'site_url', 'sfml_site_url', 10, 4);
+
 function sfml_site_url( $url, $path, $scheme, $blog_id = null ) {
 	if ( ($scheme === 'login' || $scheme === 'login_post') && !empty($path) && is_string($path) && strpos($path, '..') === false && strpos($path, 'wp-login.php') !== false ) {
 		// Base url
@@ -164,6 +167,7 @@ function sfml_site_url( $url, $path, $scheme, $blog_id = null ) {
 // !Network site URL
 
 add_filter( 'network_site_url', 'sfml_network_site_url', 10, 3);
+
 function sfml_network_site_url( $url, $path, $scheme ) {
 	if ( ($scheme === 'login' || $scheme === 'login_post') && !empty($path) && is_string($path) && strpos($path, '..') === false && strpos($path, 'wp-login.php') !== false ) {
 		global $current_site;
@@ -178,6 +182,7 @@ function sfml_network_site_url( $url, $path, $scheme ) {
 // !Logout url: wp_logout_url() add the action param after using site_url()
 
 add_filter( 'logout_url', 'sfml_logout_url' );
+
 function sfml_logout_url( $link ) {
 	return sfml_login_to_action( $link, 'logout' );
 }
@@ -186,6 +191,7 @@ function sfml_logout_url( $link ) {
 // !Forgot password url: lostpassword_url() add the action param after using site_url()
 
 add_filter( 'lostpassword_url', 'sfml_lostpass_url' );
+
 function sfml_lostpass_url( $link ) {
 	return sfml_login_to_action( $link, 'lostpassword' );
 }
@@ -194,6 +200,7 @@ function sfml_lostpass_url( $link ) {
 // !Redirections are hard-coded
 
 add_filter('wp_redirect', 'sfml_redirect', 10, 2);
+
 function sfml_redirect( $location, $status ) {
 	if ( site_url( reset( explode( '?', $location ) ) ) == site_url( 'wp-login.php' ) )
 		return sfml_site_url( $location, $location, 'login', get_current_blog_id() );
@@ -207,6 +214,7 @@ function sfml_redirect( $location, $status ) {
 /* ----------------------------------------------------------------------------- */
 
 add_action( 'login_init', 'sfml_login_init', 0 );
+
 function sfml_login_init() {
 	// If the user is logged in, do nothing, lets WP redirect this user to the administration area.
 	if ( is_user_logged_in() )
@@ -219,13 +227,16 @@ function sfml_login_init() {
 	if ( $uri === 'wp-login.php' ) {
 		do_action( 'sfml_wp_login_error' );
 
-		if ( !did_action('sfml_wp_login_error') )
+		// To make sure something happen.
+		if ( false === has_action( 'sfml_wp_login_error' ) ) {
 			sfml_wp_login_error();
+		}
 	}
 }
 
 
 add_action( 'sfml_wp_login_error', 'sfml_wp_login_error' );
+
 function sfml_wp_login_error() {
 	$do = sfml_deny_wp_login_access();
 	switch( $do ) {
@@ -237,7 +248,7 @@ function sfml_wp_login_error() {
 			wp_safe_redirect( home_url() );
 			exit;
 		default:
-			wp_die( __('No no no, the login form is not here.', 'sfml') );
+			wp_die( __('No no no, the login form is not here.', 'sf-move-login') );
 	}
 }
 
@@ -246,7 +257,8 @@ function sfml_wp_login_error() {
 /* !	IF NOT CONNECTED, DO NOT REDIRECT FROM ADMIN AREA TO WP-LOGIN.PHP		 */
 /* ----------------------------------------------------------------------------- */
 
-add_action('after_setup_theme', 'sfml_maybe_die_before_admin_redirect');
+add_action( 'after_setup_theme', 'sfml_maybe_die_before_admin_redirect' );
+
 function sfml_maybe_die_before_admin_redirect() {
 	// If it's not the administration area, or if it's an ajax call, no need to go further.
 	if ( !sfml_is_admin() )
@@ -257,13 +269,16 @@ function sfml_maybe_die_before_admin_redirect() {
 	if ( !wp_validate_auth_cookie( '', $scheme) && sfml_deny_admin_access() ) {
 		do_action( 'sfml_wp_admin_error' );
 
-		if ( !did_action('sfml_wp_admin_error') )
+		// To make sure something happen.
+		if ( false === has_action( 'sfml_wp_admin_error' ) ) {
 			sfml_wp_admin_error();
+		}
 	}
 }
 
 
 add_action( 'sfml_wp_admin_error', 'sfml_wp_admin_error' );
+
 function sfml_wp_admin_error() {
 	$do = sfml_deny_admin_access();
 	switch( $do ) {

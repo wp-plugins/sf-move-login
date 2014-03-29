@@ -8,8 +8,6 @@ if( !defined( 'ABSPATH' ) )
 
 // !Activate
 
-register_activation_hook( SFML_FILE, 'sfml_activate' );
-
 // Trigger wp_die() on plugin activation, set a transient for admin notices
 function sfml_activate() {
 	global $is_apache, $is_iis7, $is_nginx;
@@ -42,10 +40,10 @@ function sfml_activate() {
 	// die()s
 	if ( count( $dies ) ) {
 
-		load_plugin_textdomain( 'sfml', false, SFML_PLUGIN_BASEDIR . '/languages/' );
+		load_plugin_textdomain( 'sf-move-login', false, SFML_PLUGIN_BASEDIR . '/languages/' );
 
 		$dies = array_filter( array_map( 'sfml_notice_message', $dies ) );
-		$die_msg = __('<strong>Move Login</strong> has not been activated.', 'sfml').'<br/>';
+		$die_msg = __('<strong>Move Login</strong> has not been activated.', 'sf-move-login').'<br/>';
 		wp_die( $die_msg.implode('<br/>', $dies), __('Error'), array('back_link' => true) );
 
 	}
@@ -58,22 +56,24 @@ function sfml_activate() {
 	}
 }
 
+register_activation_hook( SFML_FILE, 'sfml_activate' );
+
 
 // !Update rewrite rules on Noop activation/deactivation
 
-register_activation_hook( dirname(SFML_PLUGIN_DIR).'/noop/noop.php', 'sfml_noop_activate' );
-register_deactivation_hook( dirname(SFML_PLUGIN_DIR).'/noop/noop.php', 'sfml_noop_activate' );
 function sfml_noop_activate() {
 	if ( sf_can_use_noop( SFML_NOOP_VERSION ) )
 		sfml_activate();
 }
+
+register_activation_hook( dirname(SFML_PLUGIN_DIR).'/noop/noop.php', 'sfml_noop_activate' );
+register_deactivation_hook( dirname(SFML_PLUGIN_DIR).'/noop/noop.php', 'sfml_noop_activate' );
 
 
 /* !---------------------------------------------------------------------------- */
 /* !	DEACTIVATION															 */
 /* ----------------------------------------------------------------------------- */
 
-register_deactivation_hook( SFML_FILE, 'sfml_deactivate' );
 function sfml_deactivate() {
 	global $is_apache, $is_iis7;
 	// IIS
@@ -84,12 +84,13 @@ function sfml_deactivate() {
 		sf_insert_htaccess_rewrite_rules( 'SF Move Login' );	// Empty content
 }
 
+register_deactivation_hook( SFML_FILE, 'sfml_deactivate' );
+
 
 /* !---------------------------------------------------------------------------- */
 /* !	UNINSTALL																 */
 /* ----------------------------------------------------------------------------- */
 
-register_uninstall_hook( SFML_FILE, 'sfml_uninstall' );
 function sfml_uninstall() {
 	if ( sf_can_use_noop( SFML_NOOP_VERSION ) ) {
 		if ( !class_exists('Noop_Options') )
@@ -101,12 +102,15 @@ function sfml_uninstall() {
 	delete_option( 'sfml_version' );
 }
 
+register_uninstall_hook( SFML_FILE, 'sfml_uninstall' );
+
 
 /* !---------------------------------------------------------------------------- */
 /* !	UPGRADE																	 */
 /* ----------------------------------------------------------------------------- */
 
 add_action( 'load-plugins.php', 'sfml_upgrade' );
+
 function sfml_upgrade() {
 
 	$db_version = get_option( 'sfml_version' );
@@ -130,6 +134,7 @@ function sfml_upgrade() {
 // !Admin notices
 
 add_action( 'all_admin_notices', 'sfml_notices' );
+
 function sfml_notices() {
 	global $pagenow;
 	if ( $pagenow != 'plugins.php' )
@@ -193,16 +198,16 @@ function sfml_notice_message( $k ) {
 	if ( is_null( $messages ) ) {
 		global $is_iis7;
 		$file	= $is_iis7 ? '<code>web.config</code>' : '<code>.htaccess</code>';
-		$link	= is_multisite() ? '<a href="settings.php?page=move-login">Move Login</a>' : '<a href="options-general.php?page=move-login">Move Login</a>';
-		$status	= sfml_plugin_row_meta( array(), SFML_PLUGIN_BASENAME );	// Message if Noop is not running
+		$link	= '<a href="' . ( is_multisite() ? network_admin_url( 'settings.php?page=move-login' ) : admin_url( 'options-general.php?page=move-login' ) ) . '">Move Login</a>';
+		$status	= sfml_get_noop_status_text();	// Message if Noop is not running
 
 		$messages = array(
-			'error_file_not_writable'	=> sprintf( __('<strong>Move Login</strong> needs access to the %1$s file. Please visit the %2$s settings page and copy/paste the given code into the %1$s file.', 'sfml'), $file, $link ),
-			'error_no_request_uri'		=> __('It seems your server configuration prevent the plugin to work properly. <strong>Move Login</strong> won\'t work.', 'sfml'),
-			'error_no_mod_rewrite'		=> __('It seems the url rewrite module is not activated on your server. <strong>Move Login</strong> won\'t work.', 'sfml'),
-			'error_no_apache_nor_ii7'	=> __('It seems your server does not use <i>Apache</i>, <i>Nginx</i>, nor <i>IIS7</i>. <strong>Move Login</strong> won\'t work.', 'sfml'),
-			'updated_no_noop'			=> count( $status ) ? reset( $status ) : '',
-			'updated_is_nginx'			=> sprintf( __('It seems your server uses a <i>Nginx</i> system, that I don\'t know at all. So I have to let you deal with the rewrite rules by yourself. Please visit the %2$s settings page and take a look at the rewrite rules used for a %1$s file. <strong>Move Login</strong> is running but won\'t work correctly until you deal with the rewrite rules.', 'sfml'), $file, $link ),
+			'error_file_not_writable'	=> sprintf( __('<strong>Move Login</strong> needs access to the %1$s file. Please visit the %2$s settings page and copy/paste the given code into the %1$s file.', 'sf-move-login'), $file, $link ),
+			'error_no_request_uri'		=> __('It seems your server configuration prevent the plugin to work properly. <strong>Move Login</strong> won\'t work.', 'sf-move-login'),
+			'error_no_mod_rewrite'		=> __('It seems the url rewrite module is not activated on your server. <strong>Move Login</strong> won\'t work.', 'sf-move-login'),
+			'error_no_apache_nor_ii7'	=> __('It seems your server does not use <i>Apache</i>, <i>Nginx</i>, nor <i>IIS7</i>. <strong>Move Login</strong> won\'t work.', 'sf-move-login'),
+			'updated_no_noop'			=> $status,
+			'updated_is_nginx'			=> sprintf( __('It seems your server uses a <i>Nginx</i> system, that I don\'t know at all. So I have to let you deal with the rewrite rules by yourself. Please visit the %2$s settings page and take a look at the rewrite rules used for a %1$s file. <strong>Move Login</strong> is running but won\'t work correctly until you deal with the rewrite rules.', 'sf-move-login'), $file, $link ),
 		);
 	}
 
@@ -218,6 +223,7 @@ function sfml_notice_message( $k ) {
 
 add_filter( 'plugin_action_links_'.SFML_PLUGIN_BASENAME, 'sfml_settings_action_links', 10, 2 );
 add_filter( 'network_admin_plugin_action_links_'.SFML_PLUGIN_BASENAME, 'sfml_settings_action_links', 10, 2 );
+
 function sfml_settings_action_links( $links, $file ) {
 	if ( !sf_can_use_noop( SFML_NOOP_VERSION ) )
 		$links['settings'] = '<a href="' . ( is_multisite() ? network_admin_url( 'settings.php?page=move-login' ) : admin_url( 'options-general.php?page=move-login' ) ) . '">' . __("Settings") . '</a>';
@@ -228,38 +234,14 @@ function sfml_settings_action_links( $links, $file ) {
 // !Link to download Noop if not installed
 
 add_filter( 'plugin_row_meta', 'sfml_plugin_row_meta', PHP_INT_MAX, 4 );
+
 function sfml_plugin_row_meta( $plugin_meta, $plugin_file, $plugin_data = false, $status = false ) {
 	if ( $plugin_file === SFML_PLUGIN_BASENAME ) {
 
-		$noop_status = get_noop_status( SFML_NOOP_VERSION );
-		$messages = array(
-			'ok'		=> false,
-			'required'	=> __( 'To enable the real settings page for Move Login, please install the plugin %1$s.', 'sfml' ),
-			'inactive'	=> __( 'To enable the real settings page for Move Login, please activate the plugin %2$s.', 'sfml' ),
-			'upgrade'	=> __( 'To enable the real settings page for Move Login, please upgrade the plugin %2$s to the version %3$s.', 'sfml' ),
-			'corrupted'	=> __( 'It seems the plugin Noop is installed but doesn\'t work properly. To enable the real settings page for Move Login, please reinstall %1$s.', 'sfml' ),
-		);
-
-		// Add the message
-		if ( $messages[$noop_status] ) {
-
-			$link		= '<a href="' . self_admin_url( 'plugin-install.php?tab=plugin-information&amp;plugin=noop&amp;TB_iframe=true&amp;width=600&amp;height=550' ) . '" class="thickbox" title="Noop">Noop</a>';
-			$noop_link	= wp_nonce_url('plugins.php?action=activate&amp;plugin=noop/noop.php&amp;plugin_status=all&amp;paged=1&amp;s=', 'activate-plugin_noop/noop.php');
-
-			if ( is_multisite() && current_user_can('manage_network_plugins') )
-				$noop_link = '<a href="' . $noop_link . '" title="' . esc_attr__('Activate this plugin for all sites in this network') . '" class="edit">Noop</a>';
-			elseif ( !is_multisite() && current_user_can('activate_plugins') )
-				$noop_link = '<a href="' . $noop_link . '" title="' . esc_attr__('Activate this plugin') . '" class="edit">Noop</a>';
-			else
-				$noop_link = '<strong>Noop</strong>';
-
-			$plugin_meta[] = sprintf(
-				$messages[$noop_status],
-				$link,
-				$noop_link,
-				SFML_NOOP_VERSION
-			);
+		if ( $status_text = sfml_get_noop_status_text() ) {
+			$plugin_meta[] = $status_text;
 		}
+
 	}
 	return $plugin_meta;
 }
@@ -268,10 +250,48 @@ function sfml_plugin_row_meta( $plugin_meta, $plugin_file, $plugin_data = false,
 // !The link for Noop will need the Noop infos
 
 add_action( 'setup_theme', 'sfml_noop_infos' );
+
 function sfml_noop_infos() {
-	$status = array( 'required' => 1, 'corrupted' => 1 );
-	if ( isset( $status[get_noop_status( SFML_NOOP_VERSION )] ) )
+	if ( function_exists('sf_pull_noop_info') ) {
+		return;
+	}
+
+	$status = get_noop_status( SFML_NOOP_VERSION );
+	if ( $status == 'required' || $status == 'corrupted' ) {
 		include( SFML_PLUGIN_DIR . 'inc/noop-infos.inc.php' );
+	}
+}
+
+
+/* !---------------------------------------------------------------------------- */
+/* !	SHOW EVERY AUTHORS ON THE PLUGIN PAGE									 */
+/* ----------------------------------------------------------------------------- */
+
+add_filter( 'plugin_row_meta', 'sfml_authors_plugin_row_meta', 10, 2 );
+
+function sfml_authors_plugin_row_meta( $plugin_meta, $plugin_file ) {
+	if ( SFML_PLUGIN_BASENAME !== $plugin_file )
+		return $plugin_meta;
+
+	$links			= '<a href="http://www.screenfeed.fr/greg/" title="' . esc_attr__( 'Visit author homepage' ) . '">Grégory Viguier</a>';
+	$link_pos		= array_search( sprintf( __( 'By %s' ), $links ), $plugin_meta );
+	if ( $link_pos === false )
+		return $plugin_meta;
+
+	$links			= (array) $links;
+	$authors		= array(
+		array( 'name' => 'Julio Potier',	'url' => 'http://www.boiteaweb.fr' ),
+		array( 'name' => 'SecuPress',		'url' => 'http://blog.secupress.fr' ),
+	);
+
+	foreach( $authors as $author ) {
+		$links[] = '<a href="' . $author['url'] . '" title="' . esc_attr__( 'Visit author homepage' ) . '">' . $author['name'] . '</a>';
+	}
+
+	$links = str_replace( ', and ', __(', and '), sprintf( __( 'By %s' ), wp_sprintf( '%l', $links ) ) );
+	$plugin_meta[$link_pos] = $links;
+
+	return $plugin_meta;
 }
 
 
@@ -303,4 +323,35 @@ function get_noop_status( $required_version ) {
 	return 'ok';
 }
 endif;
+
+
+function sfml_get_noop_status_text() {
+	$status_text	= '';
+	$noop_status	= get_noop_status( SFML_NOOP_VERSION );
+	$messages		= array(
+		'ok'		=> false,
+		'required'	=> __( 'To enable the real settings page for Move Login, please install the plugin %1$s (can also be %4$s).', 'sf-move-login' ),
+		'inactive'	=> __( 'To enable the real settings page for Move Login, please activate the plugin %2$s.', 'sf-move-login' ),
+		'upgrade'	=> __( 'To enable the real settings page for Move Login, please upgrade the plugin %2$s to the version %3$s (can also be %4$s).', 'sf-move-login' ),
+		'corrupted'	=> __( 'It seems the plugin Noop is installed but doesn\'t work properly. To enable the real settings page for Move Login, please reinstall %1$s (can also be %4$s).', 'sf-move-login' ),
+	);
+
+	// Add the message
+	if ( !empty($messages[$noop_status]) ) {
+
+		$multi		= is_multisite() ? 'multi' : 'mono';	// On multisite, Noop must be "network activated" because SF Move Login is. Since the link can be displayed anywhere, we have to force it to "network".
+		$link		= sf_plugin_install_link( 'noop', 'Noop', $multi );
+		$noop_link	= sf_plugin_activation_link( 'noop/noop.php', 'Noop', $multi );
+
+		$status_text = sprintf(
+			$messages[$noop_status],
+			$link,
+			$noop_link,
+			SFML_NOOP_VERSION,
+			'<a href="' . sfml_noop_download_url() . '">' . __( 'downloaded separately', 'sf-move-login' ) . '</a>'
+		);
+	}
+
+	return $status_text;
+}
 /**/

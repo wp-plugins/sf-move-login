@@ -8,6 +8,7 @@ if( !defined( 'ABSPATH' ) )
 
 // !Return an array of action => url
 
+if ( !function_exists('sfml_rules') ):
 function sfml_rules( $actions = null ) {
 	$actions = is_null($actions) ? sfml_get_slugs() : $actions;
 	$rules = array(
@@ -20,11 +21,13 @@ function sfml_rules( $actions = null ) {
 	}
 	return $rules;
 }
+endif;
 
 
 // !Write rules in file.
 // @return (bool) false if no rewrite module or not IIS7/Apache
 
+if ( !function_exists('sfml_write_rules') ):
 function sfml_write_rules( $rules = null ) {
 	global $is_apache, $is_iis7, $is_nginx;
 	$is_nginx = is_null($is_nginx) ? (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false) : $is_nginx;
@@ -54,6 +57,7 @@ function sfml_write_rules( $rules = null ) {
 
 	return false;
 }
+endif;
 
 
 // !Is WP a MultiSite and a subfolder install?
