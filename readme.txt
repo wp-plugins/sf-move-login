@@ -73,6 +73,11 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 == Changelog ==
 
+= 1.1.3 =
+
+* 2014/04/01
+* Bugfix for php 5.4.
+
 = 1.1.2 =
 
 * 2014/03/29

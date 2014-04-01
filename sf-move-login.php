@@ -3,7 +3,7 @@
  * Plugin Name: SF Move Login
  * Plugin URI: http://www.screenfeed.fr/caravan-1-1/
  * Description: Change your login url
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: Grégory Viguier
  * Author URI: http://www.screenfeed.fr/greg/
  * License: GPLv3
@@ -24,7 +24,7 @@ if ( version_compare( $GLOBALS['wp_version'], '3.1', '<' ) )
 /* !	INIT																	 */
 /* ----------------------------------------------------------------------------- */
 
-define( 'SFML_VERSION',			'1.1.2' );
+define( 'SFML_VERSION',			'1.1.3' );
 define( 'SFML_NOOP_VERSION',	'1.0' );
 define( 'SFML_FILE',			__FILE__ );
 define( 'SFML_PLUGIN_BASEDIR',	basename( dirname( SFML_FILE ) ) );
@@ -202,7 +202,7 @@ function sfml_lostpass_url( $link ) {
 add_filter('wp_redirect', 'sfml_redirect', 10, 2);
 
 function sfml_redirect( $location, $status ) {
-	if ( site_url( reset( explode( '?', $location ) ) ) == site_url( 'wp-login.php' ) )
+	if ( site_url( reset( (explode( '?', $location )) ) ) == site_url( 'wp-login.php' ) )
 		return sfml_site_url( $location, $location, 'login', get_current_blog_id() );
 
 	return $location;
