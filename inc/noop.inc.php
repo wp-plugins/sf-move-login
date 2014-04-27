@@ -46,7 +46,7 @@ function sfml_noop_params() {
 add_filter( 'sfml_default_options', 'sfml_default_options' );
 
 function sfml_default_options( $options = array() ) {
-	return array_merge( $options, array(
+	$options = array_merge( $options, array(
 		'slugs.postpass'			=> 'postpass',
 		'slugs.logout'				=> 'logout',
 		'slugs.lostpassword'		=> 'lostpassword',
@@ -58,6 +58,17 @@ function sfml_default_options( $options = array() ) {
 		'deny_wp_login_access'		=> 1,
 		'deny_admin_access'			=> 0,
 	) );
+
+	// Plugins can add their own action
+	$additional_slugs = apply_filters( 'sfml_additional_slugs', array() );
+	if ( !empty( $additional_slugs ) ) {
+		foreach ( $additional_slugs as $slug => $label ) {
+			if ( empty( $options['slugs.' . $slug] ) ) {
+				$options['slugs.' . $slug] = $slug;
+			}
+		}
+	}
+	return $options;
 }
 
 
@@ -69,7 +80,7 @@ function sfml_escape_functions( $functions = array() ) {
 	$func_sanitize_title	= array( 'function'  => 'sanitize_title', 'params' => array( '', 'display' ) );
 	$func_intval			= array( 'function'  => 'intval' );
 
-	return array_merge( $functions, array(
+	$functions = array_merge( $functions, array(
 		'slugs.postpass'			=> $func_sanitize_title,
 		'slugs.logout'				=> $func_sanitize_title,
 		'slugs.lostpassword'		=> $func_sanitize_title,
@@ -81,6 +92,17 @@ function sfml_escape_functions( $functions = array() ) {
 		'deny_wp_login_access'		=> $func_intval,
 		'deny_admin_access'			=> $func_intval,
 	) );
+
+	// Plugins can add their own action
+	$additional_slugs = apply_filters( 'sfml_additional_slugs', array() );
+	if ( !empty( $additional_slugs ) ) {
+		foreach ( $additional_slugs as $slug => $label ) {
+			if ( empty( $functions['slugs.' . $slug] ) ) {
+				$functions['slugs.' . $slug] = $func_sanitize_title;
+			}
+		}
+	}
+	return $functions;
 }
 
 
@@ -92,7 +114,7 @@ function sfml_sanitization_functions( $functions = array() ) {
 	$func_sanitize_title	= array( 'function'  => 'sanitize_title' );
 	$func_intval			= array( 'function'  => 'intval' );
 
-	return array_merge( $functions, array(
+	$functions = array_merge( $functions, array(
 		'slugs.postpass'			=> $func_sanitize_title,
 		'slugs.logout'				=> $func_sanitize_title,
 		'slugs.lostpassword'		=> $func_sanitize_title,
@@ -104,6 +126,17 @@ function sfml_sanitization_functions( $functions = array() ) {
 		'deny_wp_login_access'		=> $func_intval,
 		'deny_admin_access'			=> $func_intval,
 	) );
+
+	// Plugins can add their own action
+	$additional_slugs = apply_filters( 'sfml_additional_slugs', array() );
+	if ( !empty( $additional_slugs ) ) {
+		foreach ( $additional_slugs as $slug => $label ) {
+			if ( empty( $functions['slugs.' . $slug] ) ) {
+				$functions['slugs.' . $slug] = $func_sanitize_title;
+			}
+		}
+	}
+	return $functions;
 }
 
 
@@ -163,13 +196,21 @@ function sfml_validate_settings( $opts, $default_options, $context ) {
 // !Fields labels (for the slugs)
 
 function sfml_slugs_fields_labels() {
-	return array(
+	$labels = array(
 		'login'				=> __('Log in'),
 		'logout'			=> __('Log out'),
 		'register'			=> __('Register'),
 		'lostpassword'		=> __('Lost Password'),
 		'resetpass'			=> __('Password Reset'),
 	);
+
+	// Plugins can add their own action
+	$additional_slugs = apply_filters( 'sfml_additional_slugs', array() );
+	if ( !empty( $additional_slugs ) ) {
+		$additional_slugs = array_diff_key( $additional_slugs, $labels );
+		$labels = array_merge( $labels, $additional_slugs );
+	}
+	return $labels;
 }
 
 

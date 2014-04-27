@@ -288,7 +288,7 @@ function sfml_authors_plugin_row_meta( $plugin_meta, $plugin_file ) {
 		$links[] = '<a href="' . $author['url'] . '" title="' . esc_attr__( 'Visit author homepage' ) . '">' . $author['name'] . '</a>';
 	}
 
-	$links = str_replace( ', and ', __(', and '), sprintf( __( 'By %s' ), wp_sprintf( '%l', $links ) ) );
+	$links = sprintf( __( 'By %s' ), wp_sprintf( '%l', $links ) );
 	$plugin_meta[$link_pos] = $links;
 
 	return $plugin_meta;

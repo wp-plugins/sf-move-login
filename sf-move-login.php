@@ -3,7 +3,7 @@
  * Plugin Name: SF Move Login
  * Plugin URI: http://www.screenfeed.fr/caravan-1-1/
  * Description: Change your login url
- * Version: 1.1.3
+ * Version: 1.1.4
  * Author: Grégory Viguier
  * Author URI: http://www.screenfeed.fr/greg/
  * License: GPLv3
@@ -24,7 +24,7 @@ if ( version_compare( $GLOBALS['wp_version'], '3.1', '<' ) )
 /* !	INIT																	 */
 /* ----------------------------------------------------------------------------- */
 
-define( 'SFML_VERSION',			'1.1.3' );
+define( 'SFML_VERSION',			'1.1.4' );
 define( 'SFML_NOOP_VERSION',	'1.0' );
 define( 'SFML_FILE',			__FILE__ );
 define( 'SFML_PLUGIN_BASEDIR',	basename( dirname( SFML_FILE ) ) );
@@ -77,8 +77,8 @@ function sfml_get_slugs() {
 		return Noop_Options::get_instance( sfml_noop_params() )->get_option( 'slugs' );
 	else {
 		static $slugs = array();	// Keep the same slugs all along.
-		if ( empty($slugs) )
-			$slugs = apply_filters( 'sfml_slugs', array(
+		if ( empty($slugs) ) {
+			$slugs = array(
 				'postpass'			=> 'postpass',
 				'logout'			=> 'logout',
 				'lostpassword'		=> 'lostpassword',
@@ -87,7 +87,20 @@ function sfml_get_slugs() {
 				'rp'				=> 'rp',
 				'register'			=> 'register',
 				'login'				=> 'login',
-			) );
+			);
+
+			// Plugins can add their own action
+			$additional_slugs = apply_filters( 'sfml_additional_slugs', array() );
+			if ( !empty( $additional_slugs ) ) {
+				$additional_slugs = array_keys( $additional_slugs );
+				$additional_slugs = array_combine( $additional_slugs, $additional_slugs );
+				$additional_slugs = array_diff_key( $additional_slugs, $slugs );	// Don't screw the default ones
+				$slugs = array_merge( $slugs, $additional_slugs );
+			}
+
+			// Generic filter, change the values
+			$slugs = apply_filters( 'sfml_slugs', $slugs );
+		}
 		return $slugs;
 	}
 }
