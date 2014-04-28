@@ -282,7 +282,7 @@ endif;
 function sfml_noop_download_url() {
 	static $url;
 	if ( empty( $url ) ) {
-		$url = 'http://www.screenfeed.fr/downloads/noop.zip?ver=' . time();
+		$url = 'http://www.screenfeed.fr/downloads/noop/?ver=' . time();
 	}
 	return $url;
 }
