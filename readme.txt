@@ -63,7 +63,7 @@ You're screwed! No, I'm kidding, but you need a ftp access to your site. When lo
 
 Yes. Each blog has its own login page. The plugin must be activated from the network. In case the plugin fails to add the rewrite rules, there's a new "settings" page in your network admin area: "Settings" -> "SF Move Login". You'll be able to copy/paste the needed lines to your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access.
 
-Eventually, try the [WordPress support forum](http://wordpress.org/support/plugin/sf-move-login) (best), or check out [my blog](http://www.screenfeed.fr/caravan-1-1/ "SF Move Login version 1.1 Announcement") for more infos, help, or bug reports (sorry guys, it's in french, but feel free to leave a comment in english).
+Eventually, try the [WordPress support forum](http://wordpress.org/support/plugin/sf-move-login) (best), or check out [my blog](http://www.screenfeed.fr/plugin-wp/move-login/ "Move Login") for more infos, help, or bug reports (sorry guys, it's in French, but feel free to leave a comment in English).
 
 
 == Screenshots ==
@@ -77,7 +77,7 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 * 2014/04/28
 * Plugins can now add their own action to Move Login more easily with the filter `sfml_additional_slugs`. Even without doing anything, Move Login handle custom actions added by other plugins, but the url can't be customisable. Now, these plugins can add a new input field to let users change this new url, and it's very simple.
-* Side note: I've just released a new version for my framework Noop (1.0.6). Now you can import and export your settings via a file, see the new tab in the "Help" area.
+* Side note: I've just released a new version for my framework Noop (1.0.7). Now you can import and export your settings via a file, see the new tab in the "Help" area.
 
 = 1.1.3 =
 
