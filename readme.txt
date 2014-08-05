@@ -59,14 +59,14 @@ For example, put this in your `functions.php` theme file:
 
 function my_custom_slugs( $slugs ) {
 	return array_merge( $slugs, array(
-		'logout'		=> 'byebye',
-		'lostpassword'	=> 'im-lost',
-		'resetpass'		=> 'reset',
-		'register'		=> 'hello',
-		'login'			=> 'welcome-back',
+		'logout'       => 'byebye',
+		'lostpassword' => 'im-lost',
+		'resetpass'    => 'reset',
+		'register'     => 'hello',
+		'login'        => 'welcome-back',
 	) );
 }`
-After saving the file, go to "Settings" => "Permalinks": the rewrite rules will be flushed by visiting this page. Make sure new lines have been added to your `.htaccess` file.
+After saving your `functions.php` file, go to "Settings" => "Permalinks": the rewrite rules will be flushed by visiting this page. Make sure new lines have been added to your `.htaccess` file.
 
 = I'm locked out! I can't access the login page! =
 
