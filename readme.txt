@@ -52,8 +52,21 @@ The plugin must be activated from your network.
 
 Since the version 1.1, yes. You have 2 ways to do that:
 
-1. Use the filter `sfml_slugs` and return an array containing your custom slugs.
 1. Install another plugin, called Noop, to enable a new settings page. Noop is a framework I developed, to easily create settings pages, and to handle options. After you install Move Login, it will provide to you a link to download Noop.
+1. Use the filter `sfml_slugs` and return an array containing your custom slugs.
+For example, put this in your `functions.php` theme file:
+`add_filter( 'sfml_slugs', 'my_custom_slugs' );
+
+function my_custom_slugs( $slugs ) {
+	return array_merge( $slugs, array(
+		'logout'		=> 'byebye',
+		'lostpassword'	=> 'im-lost',
+		'resetpass'		=> 'reset',
+		'register'		=> 'hello',
+		'login'			=> 'welcome-back',
+	) );
+}`
+After saving the file, go to "Settings" => "Permalinks": the rewrite rules will be flushed by visiting this page. Make sure new lines have been added to your `.htaccess` file.
 
 = I'm locked out! I can't access the login page! =
 
