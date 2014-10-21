@@ -8,14 +8,16 @@ Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
 
-Change your login url for something like http://example.com/login and stop login brute force attempts.
+Change your login URL for something like http://example.com/login and stop login brute force attempts.
 
 
 == Description ==
 
-This plugin forbids access to **http://example.com/wp-login.php** and creates new urls, like **http://example.com/login** or **http://example.com/logout**.
+This plugin forbids access to **http://example.com/wp-login.php** and creates new URLs, like **http://example.com/login** or **http://example.com/logout**.
 
-This is a great way to limit bots trying to brute force your login (trying to guess your login and password). Of course, the new urls are easier to remember too.
+By default, the new URLs become: *example.com/login*, *example.com/register*, *example.com/lostpassword*, *example.com/resetpass* and *example.com/logout*.
+
+This is a great way to limit bots trying to brute force your login (trying to guess your login and password). Of course, the new URLs are easier to remember too.
 The plugin is small, fast, and does not create new security vulnerabilities like some other plugins I've seen.
 
 Also remember: the use of this plugin does NOT exempt you to use a strong password. Moreover, never use "admin" as login, this is the first attempt for bots.
@@ -48,7 +50,7 @@ The plugin must be activated from your network.
 
 == Frequently Asked Questions ==
 
-= Can I set my own urls? =
+= Can I set my own URLs? =
 
 Since the version 1.1, yes. You have 2 ways to do that:
 
@@ -89,7 +91,7 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 = 1.1.4 =
 
 * 2014/04/28
-* Plugins can now add their own action to Move Login more easily with the filter `sfml_additional_slugs`. Even without doing anything, Move Login handle custom actions added by other plugins, but the url can't be customisable. Now, these plugins can add a new input field to let users change this new url, and it's very simple.
+* Plugins can now add their own action to Move Login more easily with the filter `sfml_additional_slugs`. Even without doing anything, Move Login handle custom actions added by other plugins, but the URL can't be customisable. Now, these plugins can add a new input field to let users change this new URL, and it's very simple.
 * Side note: I've just released a new version for my framework Noop (1.0.7). Now you can import and export your settings via a file, see the new tab in the "Help" area.
 
 = 1.1.3 =
