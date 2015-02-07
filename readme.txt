@@ -26,6 +26,8 @@ Also remember: the use of this plugin does NOT exempt you to use a strong passwo
 
 * English
 * French
+* Serbo-Croatian (thank you Borisa)
+* Hebrew (thank you Ahrale)
 
 = Multisite =
 
