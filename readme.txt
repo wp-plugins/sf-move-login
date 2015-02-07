@@ -3,7 +3,7 @@
 Contributors: GregLone, SecuPress, juliobox
 Tags: login, logout, url, security
 Requires at least: 3.1
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
