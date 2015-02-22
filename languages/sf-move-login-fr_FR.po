@@ -1,0 +1,109 @@
+# LANGUAGE French translation for SF Move Login plugin for WordPress.
+# Copyright (C) 2013 Grégory Viguier
+# Grégory Viguier.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sf-move-login 1.1.4\n"
+"Report-msgid -Bugs-To: Grégory Viguier <i18n@screenfeed.fr>\n"
+"POT-Creation-Date: 2013-06-01 00:04+0100\n"
+"PO-Revision-Date: 2013-10-13 00:04+0100\n"
+"Last-Translator: Grégory Viguier <i18n@screenfeed.fr>\n"
+"Language-Team: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;_n\n"
+"Language: fr_FR\n"
+"X-Generator: Poedit 1.5.7\n"
+
+# ---------------------------------------------------------------------------
+# sf-move-login.php
+
+msgid  "Change your login url"
+msgstr "Changez l'url de votre page de connexion"
+
+msgid  "No no no, the login form is not here."
+msgstr "Non non non, le formulaire de connexion ne se trouve pas ici."
+
+# ---------------------------------------------------------------------------
+# inc/noop.inc.php
+
+msgid  "The slug %s is forbidden."
+msgid_plural "The slugs %s are forbidden."
+msgstr[0] "L'identifiant %s est interdit."
+msgstr[1] "Les identifiants %s sont interdits."
+
+msgid  "The links can't have the same slugs."
+msgstr "Les liens ne peuvent pas avoir les mêmes identifiants."
+
+# ---------------------------------------------------------------------------
+# inc/admin.inc.php
+
+msgid  "Access"
+msgstr "Accès"
+
+msgid  "The constant <code>SFML_ALLOW_LOGIN_ACCESS</code> is defined to <code>true</code>, the settings below won't take effect."
+msgstr "La constante <code>SFML_ALLOW_LOGIN_ACCESS</code> est définie à <code>true</code>, les réglages ci-dessous ne prendront pas effet."
+
+msgid  "Display an error message"
+msgstr "Afficher un message d'erreur"
+
+msgid  "Redirect to a &laquo;Page not found&raquo; error page"
+msgstr "Rediriger vers une page d'erreur &laquo;Page non trouvée&raquo;"
+
+msgid  "Redirect to the home page"
+msgstr "Rediriger vers la page d'accueil"
+
+msgid  "When a not connected user attempts to access the old login page."
+msgstr "Lorsqu'un utilisateur non connecté tente d'accéder à l'ancienne page de connexion."
+
+msgid  "Administration area"
+msgstr "Zone d'administration"
+
+msgid  "Do nothing, redirect to the new login page"
+msgstr "Ne rien faire, rediriger vers la nouvelle page de connexion"
+
+msgid  "When a not connected user attempts to access the administration area."
+msgstr "Lorsqu'un utilisateur non connecté tente d'accéder à la zone d'administration."
+
+msgid  "%s File"
+msgstr "Fichier %s"
+
+msgid  "If the plugin fails to add the new rewrite rules to your %1$s file on activation, add the following to your %1$s file in %2$s, replacing other %3$s rules if they exist, <strong>above</strong> the line reading %4$s:"
+msgstr "Si l'extension ne peut ajouter les nouvelles règles de réécriture à votre fichier %1$s à son activation, ajoutez les lignes suivantes à votre fichier %1$s dans %2$s, en remplacement des autres règles liées à %3$s si elles existent, <strong>au-dessus</strong> de la ligne %4$s&#160;:"
+
+# ---------------------------------------------------------------------------
+# inc/plugins-list.inc.php
+
+msgid  "<strong>Move Login</strong> has not been activated."
+msgstr "<strong>Move Login</strong> n'a pas été activé."
+
+msgid  "<strong>Move Login</strong> needs access to the %1$s file. Please visit the %2$s settings page and copy/paste the given code into the %1$s file."
+msgstr "<strong>Move Login</strong> a besoin d'accéder au fichier %1$s. Veuillez vous rendre sur la page de réglages de %2$s et de copier/coller le code fourni dans le fichier %1$s."
+
+msgid  "It seems your server configuration prevent the plugin to work properly. <strong>Move Login</strong> won't work."
+msgstr "Il semble que votre configuration serveur empêche l'extension de fonctionner correctement. <strong>Move Login</strong> ne pourra pas fonctionner."
+
+msgid  "It seems the url rewrite module is not activated on your server. <strong>Move Login</strong> won't work."
+msgstr "Il semble que le module de réécriture d'url n'est pas activé sur votre serveur. <strong>Move Login</strong> ne pourra pas fonctionner."
+
+msgid  "It seems your server does not use <i>Apache</i>, <i>Nginx</i>, nor <i>IIS7</i>. <strong>Move Login</strong> won't work."
+msgstr "Il semble que votre serveur n'utilise pas <i>Apache</i>, <i>Nginx</i>, ou <i>IIS7</i>. <strong>Move Login</strong> ne pourra pas fonctionner."
+
+msgid  "It seems your server uses a <i>Nginx</i> system, that I don't know at all. So I have to let you deal with the rewrite rules by yourself. Please visit the %2$s settings page and take a look at the rewrite rules used for a %1$s file. <strong>Move Login</strong> is running but won't work correctly until you deal with the rewrite rules."
+msgstr "Il semble que votre serveur utilise un système <i>Nginx</i>, que je ne connais pas du tout. Je dois donc vous laisser gérer ça par vous-même. Veuillez vous rendre sur la page de réglages de %2$s et jetez un œil aux règles de réécriture utilisées pour un fichier %1$s. <strong>Move Login</strong> fonctionne mais ne pourra pas le faire correctement tant que vous ne vous serez pas occupé de ces règles."
+
+msgid  "To enable the real settings page for Move Login, please install the plugin %1$s."
+msgstr "Pour activer la vrai page de réglages pour Move Login, veuillez installer l'extension %1$s."
+
+msgid  "To enable the real settings page for Move Login, please activate the plugin %2$s."
+msgstr "Pour activer la vrai page de réglages pour Move Login, veuillez activer l'extension %2$s."
+
+msgid  "To enable the real settings page for Move Login, please upgrade the plugin %2$s to the version %3$s."
+msgstr "Pour activer la vrai page de réglages pour Move Login, veuillez mettre à jour l'extension %2$s vers la version %3$s."
+
+msgid  "It seems the plugin Noop is installed but doesn't work properly. To enable the real settings page for Move Login, please reinstall %1$s."
+msgstr "Il semblerait que l'extension Noop soit installée mais ne fonctionne pas correctement. Pour activer la vrai page de réglages pour Move Login, veuillez réinstaller %1$s."
