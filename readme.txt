@@ -3,31 +3,28 @@
 Contributors: GregLone, SecuPress, juliobox
 Tags: login, logout, url, security
 Requires at least: 3.1
-Tested up to: 4.1
+Tested up to: 4.1.1
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
 
-Change your login URL for something like http://example.com/login and stop login brute force attempts.
+Change your login URL for something like <code>http://example.com/login</code> and stop login brute force attempts.
 
 
 == Description ==
 
-This plugin forbids access to **http://example.com/wp-login.php** and creates new URLs, like **http://example.com/login** or **http://example.com/logout**.
+This plugin forbids access to **http://example.com/wp-login.php** and creates new urls, like **http://example.com/login** or **http://example.com/logout**.
 
-By default, the new URLs become: *example.com/login*, *example.com/register*, *example.com/lostpassword*, *example.com/resetpass* and *example.com/logout*.
-
-This is a great way to limit bots trying to brute force your login (trying to guess your login and password). Of course, the new URLs are easier to remember too.
-The plugin is small, fast, and does not create new security vulnerabilities like some other plugins I've seen.
+This is a great way to limit bots trying to brute force your login (trying to guess your login and password). Of course, the new urls are easier to remember too.
 
 Also remember: the use of this plugin does NOT exempt you to use a strong password. Moreover, never use "admin" as login, this is the first attempt for bots.
 
 = Translations =
 
-* English
+* US English
 * French
-* Serbo-Croatian (thank you Borisa)
-* Hebrew (thank you Ahrale)
+* Serbo-Croatian (partial, thank you Borisa)
+* Hebrew (partial, thank you Ahrale)
 
 = Multisite =
 
@@ -36,49 +33,33 @@ The plugin must be activated from your network.
 
 = Requirements =
 
-* See some important informations in the "Installation" tab.
-* Should work on IIS7+ servers but not tested.
-* If you need the settings page, you'll have to install my framework "Noop" (the link will be provided).
+* See some important informations in the "Installation" tab (I mean it).
+* Should work on IIS7+ servers but not tested (I guess you should probably save a copy of your `web.config` file before the plugin activation).
+* For nginx servers, the rewrite rules are not written automatically of course, but provided as information.
 
 
 == Installation ==
 
 1. Extract the plugin folder from the downloaded ZIP file.
 1. Upload the `sf-move-login` folder to your `/wp-content/plugins/` directory.
-1. If you have another plugin that redirects **http://example.com/login** to **http://example.com/wp-login.php** (a short-links plugin for example), disable it or remove the redirection, otherwise they will conflict and you'll be locked out. See the faq in case you're not able to reach the login page (make sure to have a ftp access to your site).
+1. If you have another plugin that makes redirections to **http://example.com/wp-login.php** (a short-links plugin for example), disable it or remove the redirection, otherwise they will conflict and you'll be locked out. See the faq in case you're not able to reach the login page (make sure to have a ftp access to your site).
 1. Activate the plugin from the "Plugins" page.
-1. If the plugin can't write your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access.
+1. If the plugin can't write your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access, the rules are provided in the plugin settings page.
 
 
 == Frequently Asked Questions ==
 
-= Can I set my own URLs? =
+= Can I set my own urls? =
 
-Since the version 1.1, yes. You have 2 ways to do that:
-
-1. Install another plugin, called Noop, to enable a new settings page. Noop is a framework I developed, to easily create settings pages, and to handle options. After you install Move Login, it will provide to you a link to download Noop.
-1. Use the filter `sfml_slugs` and return an array containing your custom slugs.
-For example, put this in your `functions.php` theme file:
-`add_filter( 'sfml_slugs', 'my_custom_slugs' );
-
-function my_custom_slugs( $slugs ) {
-	return array_merge( $slugs, array(
-		'logout'       => 'byebye',
-		'lostpassword' => 'im-lost',
-		'resetpass'    => 'reset',
-		'register'     => 'hello',
-		'login'        => 'welcome-back',
-	) );
-}`
-After saving your `functions.php` file, go to "Settings" => "Permalinks": the rewrite rules will be flushed by visiting this page. Make sure new lines have been added to your `.htaccess` file.
+Since the version 1.1, yes. And since the version 2.0, you don't need any additional plugin for that.
 
 = I'm locked out! I can't access the login page! =
 
-You're screwed! No, I'm kidding, but you need a ftp access to your site. When logged in with your ftp software, open the file wp-config.php located at the root of your installation. Simply add this in the file: `define('SFML_ALLOW_LOGIN_ACCESS', true);` and save the file. This will bypass the plugin and you'll be able to access **http://example.com/wp-login.php**. Another plugin may conflict, you'll need to find which one before removing this new line of code.
+You're screwed! No, I'm kidding, but you need a ftp access to your site. When logged in with your ftp software, open the file wp-config.php located at the root of your installation. Simply add this in the file: `define( 'SFML_ALLOW_LOGIN_ACCESS', true );` and save the file. This will bypass the plugin and you'll be able to access **http://example.com/wp-login.php**. Another plugin may conflict, you'll need to find which one before removing this new line of code.
 
 = Does it really work for Multisite? =
 
-Yes. Each blog has its own login page. The plugin must be activated from the network. In case the plugin fails to add the rewrite rules, there's a new "settings" page in your network admin area: "Settings" -> "SF Move Login". You'll be able to copy/paste the needed lines to your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access.
+Yes. Each blog has its own login page (but the customized slugs are the same for each blog though). The plugin must be activated from the network.
 
 Eventually, try the [WordPress support forum](http://wordpress.org/support/plugin/sf-move-login) (best), or check out [my blog](http://www.screenfeed.fr/plugin-wp/move-login/ "Move Login") for more infos, help, or bug reports (sorry guys, it's in French, but feel free to leave a comment in English).
 
@@ -90,11 +71,22 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 == Changelog ==
 
+= 2.0 =
+
+* 2015/02/22
+* Most of the plugin has been rewritten.
+* New: you don't need my framework Noop to have a settings page anymore (yes, you can uninstall it if it's not used elsewhere). ᕙ(⇀‸↼‶)ᕗ The bad news is there are no settings import/export/history anymore (and it won't come back). Make sure your settings are ok after upgrading.
+* New: the plugin disable some WordPress native redirections to administration area and login page. For example, **http://example.com/dashboard/** was leading to **http://example.com/wp-admin/**. This should solve a bunch of bugs.
+* New: the rewrite rules for nginx servers are now provided in the plugin settings page as information. Thank you [Willy Bahuaud](https://profiles.wordpress.org/willybahuaud/).
+* Improvement: bugfix for IIS servers.
+* Improvement: better French translations.
+* Bugfix: fix double slash in network site url (used for lostpassword).
+
 = 1.1.4 =
 
 * 2014/04/28
-* Plugins can now add their own action to Move Login more easily with the filter `sfml_additional_slugs`. Even without doing anything, Move Login handle custom actions added by other plugins, but the URL can't be customisable. Now, these plugins can add a new input field to let users change this new URL, and it's very simple.
-* Side note: I've just released a new version for my framework Noop (1.0.7). Now you can import and export your settings via a file, see the new tab in the "Help" area.
+* Plugins can now add their own action to Move Login more easily with the filter `sfml_additional_slugs`. Even without doing anything, Move Login handle custom actions added by other plugins, but the url can't be customisable. Now, these plugins can add a new input field to let users change this new url, and it's very simple.
+* Side note: I've just released a new version for my framework Noop (1.0.6). Now you can import and export your settings via a file, see the new tab in the "Help" area.
 
 = 1.1.3 =
 
@@ -167,6 +159,9 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 
 == Upgrade Notice ==
+
+= 2.0 =
+The framework Noop is not needed anymore: settings are included in the plugin. Make sure your settings are ok after upgrading.
 
 = 1.0 =
 This is the first stable version of the plugin.
