@@ -87,7 +87,7 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 * Most of the plugin has been rewritten.
 * New: you don't need my framework Noop to have a settings page anymore (yes, you can uninstall it if it's not used elsewhere). ᕙ(⇀‸↼‶)ᕗ The bad news is there are no settings import/export/history anymore (and it won't come back). Make sure your settings are ok after upgrading.
 * New: the plugin disable some WordPress native redirections to administration area and login page. For example, **http://example.com/dashboard/** was leading to **http://example.com/wp-admin/**. This should solve a bunch of bugs.
-* New: the rewrite rules for nginx servers are now provided in the plugin settings page as information. Thank you [Willy Bahuaud](https://profiles.wordpress.org/willybahuaud/).
+* New: the rewrite rules for nginx servers are now provided in the plugin settings page as information. Thank you [Milouze](https://wordpress.org/support/topic/for-nginx-server).
 * Improvement: bugfix for IIS servers.
 * Improvement: better French translations.
 * Bugfix: fix double slash in network site url (used for lostpassword).
