@@ -5,6 +5,108 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 /* !---------------------------------------------------------------------------- */
+/* !	UTILITIES																 */
+/* ----------------------------------------------------------------------------- */
+
+if ( ! function_exists( 'get_main_blog_id' ) ) :
+function get_main_blog_id() {
+	static $blog_id;
+
+	if ( ! $blog_id ) {
+		$blog_id = 1;
+
+		if ( ! is_multisite() ) {
+			// 1
+		}
+		elseif ( ! empty( $GLOBALS['current_site']->blog_id ) ) {
+			$blog_id = absint( $GLOBALS['current_site']->blog_id );
+		}
+		elseif ( defined( 'BLOG_ID_CURRENT_SITE' ) ) {
+			$blog_id = absint( BLOG_ID_CURRENT_SITE );
+		}
+		elseif ( defined( 'BLOGID_CURRENT_SITE' ) ) { // deprecated.
+			$blog_id = absint( BLOGID_CURRENT_SITE );
+		}
+		$blog_id = $blog_id ? $blog_id : 1;
+	}
+
+	return $blog_id;
+}
+endif;
+
+
+if ( ! function_exists( 'sf_maybe_flush_rewrite_rules' ) ) :
+function sf_maybe_flush_rewrite_rules() {
+	static $done = false;
+
+	if ( did_action( 'init' ) ) {
+		flush_rewrite_rules();
+	}
+	elseif ( ! $done ) {
+		$done = true;
+		add_action( 'init', 'flush_rewrite_rules', PHP_INT_MAX );
+	}
+}
+endif;
+
+
+/* !---------------------------------------------------------------------------- */
+/* !	LINKS IN THE PLUGIN ROW													 */
+/* ----------------------------------------------------------------------------- */
+
+add_filter( 'plugin_action_links_' . SFML_PLUGIN_BASENAME, 'sfml_settings_action_links', 10, 2 );
+add_filter( 'network_admin_plugin_action_links_' . SFML_PLUGIN_BASENAME, 'sfml_settings_action_links', 10, 2 );
+
+function sfml_settings_action_links( $links, $file ) {
+	$links['settings'] = '<a href="' . ( is_multisite() ? network_admin_url( 'settings.php?page=move-login' ) : admin_url( 'options-general.php?page=move-login' ) ) . '">' . __( 'Settings' ) . '</a>';
+	return $links;
+}
+
+
+// !List everybody, so no one will be jalous. :)
+
+add_filter( 'plugin_row_meta', 'sfml_plugin_row_meta', 10, 2 );
+
+function sfml_plugin_row_meta( $plugin_meta, $plugin_file ) {
+
+	if ( SFML_PLUGIN_BASENAME === $plugin_file ) {
+		$pos     = false;
+		$links   = array();
+		$authors = array(
+			array( 'name' => 'Grégory Viguier', 'url' => 'http://www.screenfeed.fr/' ),
+			array( 'name' => 'Julio Potier',    'url' => 'http://www.boiteaweb.fr' ),
+			array( 'name' => 'SecuPress',       'url' => 'http://blog.secupress.fr' ),
+		);
+
+		if ( ! empty( $plugin_meta ) ) {
+			$search = '"http://www.screenfeed.fr/"';
+			foreach ( $plugin_meta as $i => $meta ) {
+				if ( strpos( $meta, $search ) !== false ) {
+					$pos = $i;
+					break;
+				}
+			}
+		}
+
+		foreach( $authors as $author ) {
+			$links[] = sprintf( '<a href="%s">%s</a>', $author['url'], $author['name'] );
+		}
+
+		$links = sprintf( __( 'By %s' ), wp_sprintf( '%l', $links ) );
+
+		if ( $pos !== false ) {
+			$plugin_meta[ $pos ] = $links;
+		}
+		else {
+			$plugin_meta[] = $links;
+		}
+	}
+
+	return $plugin_meta;
+}
+
+
+/* !---------------------------------------------------------------------------- */
 /* !	MENU ITEM																 */
 /* ----------------------------------------------------------------------------- */
 
@@ -106,6 +208,34 @@ endif;
 /* !	UPGRADE																	 */
 /* ----------------------------------------------------------------------------- */
 
+// !Delete previous options.
+
+function sfml_delete_noop_options() {
+	$option_name      = 'sfml';
+	$page_name        = 'move-login';
+	$page_parent_name = 'settings';
+
+	// Remove the main option and the history option
+	delete_option( $option_name );
+	delete_option( $option_name . '_history' );
+
+	// Remove the users metadatas, reguarding the metaboxes placement
+	delete_metadata( 'user', 0, 'screen_layout_' . $page_parent_name . '_page_' . $page_name, null, true );
+	delete_metadata( 'user', 0, 'metaboxhidden_' . $page_parent_name . '_page_' . $page_name, null, true );
+	delete_metadata( 'user', 0, 'meta-box-order_' . $page_parent_name . '_page_' . $page_name, null, true );
+	delete_metadata( 'user', 0, 'closedpostboxes_' . $page_parent_name . '_page_' . $page_name, null, true );
+
+	if ( is_multisite() ) {
+		delete_metadata( 'user', 0, 'screen_layout_' . $page_parent_name . '_page_' . $page_name . '-network', null, true );
+		delete_metadata( 'user', 0, 'metaboxhidden_' . $page_parent_name . '_page_' . $page_name . '-network', null, true );
+		delete_metadata( 'user', 0, 'meta-box-order_' . $page_parent_name . '_page_' . $page_name . '-network', null, true );
+		delete_metadata( 'user', 0, 'closedpostboxes_' . $page_parent_name . '_page_' . $page_name . '-network', null, true );
+	}
+}
+
+
+// !Upgrade
+
 function sfml_upgrade() {
 	$proceed            = false;
 	$mono_or_multi      = 0;						// Used to tell if the site changed from monosite to multisite.
@@ -134,7 +264,7 @@ function sfml_upgrade() {
 
 		// < 1.1
 		if ( ! $db_version ) {
-			sfml_maybe_flush_rewrite_rules();
+			sf_maybe_flush_rewrite_rules();
 		}
 
 		if ( is_multisite() && get_main_blog_id() !== get_current_blog_id() ) {
@@ -173,32 +303,6 @@ function sfml_upgrade() {
 }
 
 sfml_upgrade();
-
-
-// !Delete previous options.
-
-function sfml_delete_noop_options() {
-	$option_name      = 'sfml';
-	$page_name        = 'move-login';
-	$page_parent_name = 'settings';
-
-	// Remove the main option and the history option
-	delete_option( $option_name );
-	delete_option( $option_name . '_history' );
-
-	// Remove the users metadatas, reguarding the metaboxes placement
-	delete_metadata( 'user', 0, 'screen_layout_' . $page_parent_name . '_page_' . $page_name, null, true );
-	delete_metadata( 'user', 0, 'metaboxhidden_' . $page_parent_name . '_page_' . $page_name, null, true );
-	delete_metadata( 'user', 0, 'meta-box-order_' . $page_parent_name . '_page_' . $page_name, null, true );
-	delete_metadata( 'user', 0, 'closedpostboxes_' . $page_parent_name . '_page_' . $page_name, null, true );
-
-	if ( is_multisite() ) {
-		delete_metadata( 'user', 0, 'screen_layout_' . $page_parent_name . '_page_' . $page_name . '-network', null, true );
-		delete_metadata( 'user', 0, 'metaboxhidden_' . $page_parent_name . '_page_' . $page_name . '-network', null, true );
-		delete_metadata( 'user', 0, 'meta-box-order_' . $page_parent_name . '_page_' . $page_name . '-network', null, true );
-		delete_metadata( 'user', 0, 'closedpostboxes_' . $page_parent_name . '_page_' . $page_name . '-network', null, true );
-	}
-}
 
 
 /* !---------------------------------------------------------------------------- */
@@ -263,109 +367,6 @@ function sfml_notices() {
 	elseif ( $proceed === '1' ) {
 		// Add the rewrite rules to the .htaccess/web.config file.
 		sfml_write_rules();
-	}
-}
-
-
-/* !---------------------------------------------------------------------------- */
-/* !	LINKS IN THE PLUGIN ROW													 */
-/* ----------------------------------------------------------------------------- */
-
-add_filter( 'plugin_action_links_' . SFML_PLUGIN_BASENAME, 'sfml_settings_action_links', 10, 2 );
-add_filter( 'network_admin_plugin_action_links_' . SFML_PLUGIN_BASENAME, 'sfml_settings_action_links', 10, 2 );
-
-function sfml_settings_action_links( $links, $file ) {
-	$links['settings'] = '<a href="' . ( is_multisite() ? network_admin_url( 'settings.php?page=move-login' ) : admin_url( 'options-general.php?page=move-login' ) ) . '">' . __( 'Settings' ) . '</a>';
-	return $links;
-}
-
-
-// !List everybody, so no one will be jalous. :)
-
-add_filter( 'plugin_row_meta', 'sfml_plugin_row_meta', 10, 2 );
-
-function sfml_plugin_row_meta( $plugin_meta, $plugin_file ) {
-
-	if ( SFML_PLUGIN_BASENAME === $plugin_file ) {
-		$pos     = false;
-		$links   = array();
-		$authors = array(
-			array( 'name' => 'Grégory Viguier', 'url' => 'http://www.screenfeed.fr/' ),
-			array( 'name' => 'Julio Potier',    'url' => 'http://www.boiteaweb.fr' ),
-			array( 'name' => 'SecuPress',       'url' => 'http://blog.secupress.fr' ),
-		);
-
-		if ( ! empty( $plugin_meta ) ) {
-			$search = '"http://www.screenfeed.fr/"';
-			foreach ( $plugin_meta as $i => $meta ) {
-				if ( strpos( $meta, $search ) !== false ) {
-					$pos = $i;
-					break;
-				}
-			}
-		}
-
-		foreach( $authors as $author ) {
-			$links[] = sprintf( '<a href="%s">%s</a>', $author['url'], $author['name'] );
-		}
-
-		$links = sprintf( __( 'By %s' ), wp_sprintf( '%l', $links ) );
-
-		if ( $pos !== false ) {
-			$plugin_meta[ $pos ] = $links;
-		}
-		else {
-			$plugin_meta[] = $links;
-		}
-	}
-
-	return $plugin_meta;
-}
-
-
-/* !---------------------------------------------------------------------------- */
-/* !	UTILITIES																 */
-/* ----------------------------------------------------------------------------- */
-
-if ( ! function_exists( 'get_main_blog_id' ) ) :
-function get_main_blog_id() {
-	static $blog_id;
-
-	if ( ! $blog_id ) {
-		$blog_id = 1;
-
-		if ( ! is_multisite() ) {
-			// 1
-		}
-		elseif ( ! empty( $GLOBALS['current_site']->blog_id ) ) {
-			$blog_id = absint( $GLOBALS['current_site']->blog_id );
-		}
-		elseif ( defined( 'BLOG_ID_CURRENT_SITE' ) ) {
-			$blog_id = absint( BLOG_ID_CURRENT_SITE );
-		}
-		elseif ( defined( 'BLOGID_CURRENT_SITE' ) ) { // deprecated.
-			$blog_id = absint( BLOGID_CURRENT_SITE );
-		}
-		$blog_id = $blog_id ? $blog_id : 1;
-	}
-
-	return $blog_id;
-}
-endif;
-
-
-function sfml_maybe_flush_rewrite_rules() {
-	static $done = false;
-
-	if ( ! $done ) {
-		$done = true;
-
-		if ( did_action( 'init' ) ) {
-			flush_rewrite_rules();
-		}
-		else {
-			add_action( 'init', 'flush_rewrite_rules', PHP_INT_MAX );
-		}
 	}
 }
 

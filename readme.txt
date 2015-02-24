@@ -71,6 +71,11 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 == Changelog ==
 
+= 2.0.1 =
+
+* 2015/02/24
+* Fixes a fatal error for multisites.
+
 = 2.0 =
 
 * 2015/02/22
