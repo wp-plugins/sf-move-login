@@ -320,7 +320,7 @@ function sfml_notices() {
 	$user_id = get_current_user_id();
 	$proceed = get_transient( 'sfml_notices-' . $user_id );	// 1 means "Update the file". 2 means "No need to update the file".
 
-	// If the transient exists, it means means it's the plugin activation or upgrade.
+	// If the transient exists, it means it's the plugin activation or upgrade.
 	if ( ! $proceed ) {
 		return;
 	}
@@ -336,11 +336,11 @@ function sfml_notices() {
 	$home_path = sfml_get_home_path();
 
 	// IIS7
-	if ( $is_iis7 && sfml_iis7_supports_permalinks() && ! ( wp_is_writable( $home_path . 'web.config' ) || ( ! file_exists( $home_path . 'web.config' ) && wp_is_writable( $home_path ) ) ) ) {
+	if ( $is_iis7 && iis7_supports_permalinks() && ! ( wp_is_writable( $home_path . 'web.config' ) || ( ! file_exists( $home_path . 'web.config' ) && wp_is_writable( $home_path ) ) ) ) {
 		$notices[] = 'error_file_not_writable';
 	}
 	// Apache
-	elseif ( $is_apache && sfml_got_mod_rewrite() && ! ( wp_is_writable( $home_path . '.htaccess' ) || ( ! file_exists( $home_path . '.htaccess' ) && wp_is_writable( $home_path ) ) ) ) {
+	elseif ( $is_apache && got_mod_rewrite() && ! ( wp_is_writable( $home_path . '.htaccess' ) || ( ! file_exists( $home_path . '.htaccess' ) && wp_is_writable( $home_path ) ) ) ) {
 		$notices[] = 'error_file_not_writable';
 	}
 	// Nginx

@@ -25,11 +25,11 @@ function sfml_activate() {
 		$dies[] = 'error_no_request_uri';
 	}
 	// IIS7
-	if ( $is_iis7 && ! sfml_iis7_supports_permalinks() ) {
+	if ( $is_iis7 && ! iis7_supports_permalinks() ) {
 		$dies[] = 'error_no_mod_rewrite';
 	}
 	// Apache
-	elseif ( $is_apache && ! sfml_got_mod_rewrite() ) {
+	elseif ( $is_apache && ! got_mod_rewrite() ) {
 		$dies[] = 'error_no_mod_rewrite';
 	}
 	// None

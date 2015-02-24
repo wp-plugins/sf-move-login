@@ -4,6 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* !---------------------------------------------------------------------------- */
+/* !	INCLUDES																 */
+/* ----------------------------------------------------------------------------- */
+
+require_once( ABSPATH . WPINC . '/functions.php' );
+require_once( ABSPATH . 'wp-admin/includes/misc.php' );
+
+
+/* !---------------------------------------------------------------------------- */
 /* !	REWRITE RULES															 */
 /* ----------------------------------------------------------------------------- */
 
@@ -81,11 +89,11 @@ function sfml_can_write_file() {
 	$home_path = sfml_get_home_path();
 
 	// IIS7
-	if ( $is_iis7 && sfml_iis7_supports_permalinks() && ( wp_is_writable( $home_path . 'web.config' ) || ( ! file_exists( $home_path . 'web.config' ) && wp_is_writable( $home_path ) ) ) ) {
+	if ( $is_iis7 && iis7_supports_permalinks() && ( wp_is_writable( $home_path . 'web.config' ) || ( ! file_exists( $home_path . 'web.config' ) && wp_is_writable( $home_path ) ) ) ) {
 		return true;
 	}
 	// Apache
-	elseif ( $is_apache && sfml_got_mod_rewrite() && ( wp_is_writable( $home_path . '.htaccess' ) || ( ! file_exists( $home_path . '.htaccess' ) && wp_is_writable( $home_path ) ) ) ) {
+	elseif ( $is_apache && got_mod_rewrite() && ( wp_is_writable( $home_path . '.htaccess' ) || ( ! file_exists( $home_path . '.htaccess' ) && wp_is_writable( $home_path ) ) ) ) {
 		return true;
 	}
 
@@ -128,9 +136,9 @@ function sfml_nginx_rewrite_rules( $rules = array() ) {
 		return '';
 	}
 
-	$base			= parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
-	$subdir_match	= sfml_is_subfolder_install() ? '([_0-9a-zA-Z-]+/)?' : '(/)?';
-	$out			= array();
+	$base         = parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
+	$subdir_match = sfml_is_subfolder_install() ? '([_0-9a-zA-Z-]+/)?' : '(/)?';
+	$out          = array();
 
 	foreach ( $rules as $slug => $rule ) {
 		$out[] = 'rewrite ^' . $subdir_match . $slug . '/?$ $1' . $rule . ' break';
@@ -143,31 +151,6 @@ function sfml_nginx_rewrite_rules( $rules = array() ) {
 /* !---------------------------------------------------------------------------- */
 /* !	REWRITE RULES: APACHE													 */
 /* ----------------------------------------------------------------------------- */
-
-// !got_mod_rewrite() like.
-
-function sfml_got_mod_rewrite() {
-	if ( function_exists( 'got_mod_rewrite' ) ) {
-		return got_mod_rewrite();
-	}
-
-	$got_rewrite = apache_mod_loaded( 'mod_rewrite', true );
-
-	/**
-	 * Filter whether Apache and mod_rewrite are present.
-	 *
-	 * This filter was previously used to force URL rewriting for other servers,
-	 * like nginx. Use the got_url_rewrite filter in got_url_rewrite() instead.
-	 *
-	 * @since 2.5.0
-	 *
-	 * @see got_url_rewrite()
-	 *
-	 * @param bool $got_rewrite Whether Apache and mod_rewrite are present.
-	 */
-	return apply_filters( 'got_rewrite', $got_rewrite );
-}
-
 
 // !Return the multisite rewrite rules (as an array).
 
@@ -205,12 +188,12 @@ function sfml_insert_apache_rewrite_rules( $marker, $rules = '', $before = '# BE
 		return false;
 	}
 
-	$home_path		= sfml_get_home_path();
-	$htaccess_file	= $home_path . '.htaccess';
+	$home_path     = sfml_get_home_path();
+	$htaccess_file = $home_path . '.htaccess';
 
-	$has_htaccess			= file_exists( $htaccess_file );
-	$htaccess_is_writable	= $has_htaccess && is_writeable( $htaccess_file );
-	$got_mod_rewrite		= sfml_got_mod_rewrite();
+	$has_htaccess         = file_exists( $htaccess_file );
+	$htaccess_is_writable = $has_htaccess && is_writeable( $htaccess_file );
+	$got_mod_rewrite      = got_mod_rewrite();
 
 	if (
 		( $htaccess_is_writable && !$rules ) ||		// Remove rules
@@ -249,40 +232,6 @@ function sfml_insert_apache_rewrite_rules( $marker, $rules = '', $before = '# BE
 /* !---------------------------------------------------------------------------- */
 /* !	REWRITE RULES: IIS														 */
 /* ----------------------------------------------------------------------------- */
-
-// !iis7_supports_permalinks() like.
-
-function sfml_iis7_supports_permalinks() {
-	global $is_iis7;
-
-	if ( function_exists( 'iis7_supports_permalinks' ) ) {
-		return iis7_supports_permalinks();
-	}
-
-	$supports_permalinks = false;
-	if ( $is_iis7 ) {
-		/* First we check if the DOMDocument class exists. If it does not exist, then we cannot
-		 * easily update the xml configuration file, hence we just bail out and tell user that
-		 * pretty permalinks cannot be used.
-		 *
-		 * Next we check if the URL Rewrite Module 1.1 is loaded and enabled for the web site. When
-		 * URL Rewrite 1.1 is loaded it always sets a server variable called 'IIS_UrlRewriteModule'.
-		 * Lastly we make sure that PHP is running via FastCGI. This is important because if it runs
-		 * via ISAPI then pretty permalinks will not work.
-		 */
-		$supports_permalinks = class_exists('DOMDocument') && isset($_SERVER['IIS_UrlRewriteModule']) && ( PHP_SAPI == 'cgi-fcgi' );
-	}
-
-	/**
-	 * Filter whether IIS 7+ supports pretty permalinks.
-	 *
-	 * @since 2.8.0
-	 *
-	 * @param bool $supports_permalinks Whether IIS7 supports permalinks. Default false.
-	 */
-	return apply_filters( 'iis7_supports_permalinks', $supports_permalinks );
-}
-
 
 // !Return the multisite rewrite rules for IIS systems (as a part of a xml system).
 
@@ -328,7 +277,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 
 	$has_web_config			= file_exists( $web_config_file );
 	$web_config_is_writable	= $has_web_config && wp_is_writable( $web_config_file );
-	$supports_permalinks	= sfml_iis7_supports_permalinks();
+	$supports_permalinks	= iis7_supports_permalinks();
 
 	// New content
 	$rules = is_array( $rules ) ? implode( "\n", $rules ) : $rules;

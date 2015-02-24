@@ -71,6 +71,11 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 == Changelog ==
 
+= 2.0.2 =
+
+* 2015/02/24
+* Same as below... Fingers crossed. >_>
+
 = 2.0.1 =
 
 * 2015/02/24
