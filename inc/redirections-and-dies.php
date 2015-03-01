@@ -23,9 +23,17 @@ function sfml_login_init() {
 		return;
 	}
 
-	$uri   = sf_get_current_url( 'uri' );
-	$slugs = sfml_get_slugs();
-	$slugs = apply_filters( 'sfml_slugs_not_to_kill', $slugs, $uri );
+	$uri       = sf_get_current_url( 'uri' );
+	$subdir    = sfml_wp_directory();
+	$slugs     = sfml_get_slugs();
+	if ( $subdir ) {
+		foreach ( $slugs as $action => $slug ) {
+			$slugs[ $action ] = $subdir . $slug;
+		}
+	}
+	// If you want to display the login form somewhere outside wp-login.php, add your URIs here.
+	$new_slugs = apply_filters( 'sfml_slugs_not_to_kill', array(), $uri, $subdir, $slugs );
+	$slugs     = is_array( $new_slugs ) && ! empty( $new_slugs ) ? array_merge( $new_slugs, $slugs ) : $slugs;
 
 	if ( ! in_array( $uri, $slugs ) ) {
 		do_action( 'sfml_wp_login_error' );

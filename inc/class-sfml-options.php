@@ -108,7 +108,7 @@ class SFML_Options {
 
 			// Generic filter, change the values.
 			$options_tmp   = apply_filters( 'sfml_options', self::$options );
-			self::$options = array_merge( self::$options, $options_tmp );	// Make sure no keys have been removed.
+			self::$options = array_intersect_key( array_merge( self::$options, $options_tmp ), self::$options );	// Make sure no keys have been added or removed.
 		}
 
 		return self::$options;
@@ -122,7 +122,7 @@ class SFML_Options {
 		self::maybe_clear_options_cache();
 
 		if ( ! isset( self::$slugs ) ) {
-			return self::get_sub_options( 'slugs', self::get_options() );
+			self::$slugs = self::get_sub_options( 'slugs', self::get_options() );
 		}
 
 		return self::$slugs;

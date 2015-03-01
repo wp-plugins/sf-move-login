@@ -242,6 +242,7 @@ function sfml_upgrade() {
 	$current_mono_multi = is_multisite() ? 2 : 1;	// 1: monosite, 2: multisite.
 	$db_version         = get_site_option( 'sfml_version' );
 	$db_version         = is_string( $db_version ) ? explode( '|', $db_version ) : false;
+	$update_file        = '2';						// 2 means "No need to update the file": update_site_option() already did.
 
 	if ( $db_version ) {
 		$mono_or_multi  = isset( $db_version[1] ) ? (int) $db_version[1] : 0;
@@ -295,9 +296,13 @@ function sfml_upgrade() {
 		update_site_option( SFML_Options::OPTION_NAME, $old_options );
 
 	}
+	//
+	elseif ( version_compare( $db_version, '2.1-beta' ) < 0 ) {
+		$update_file = '1';
+	}
 
 	// Perhaps we'll need to display some notices. Add the rewrite rules to the .htaccess/web.config file.
-	set_transient( 'sfml_notices-' . get_current_user_id(), '2' );	// 2 means "No need to update the file": update_site_option() already did.
+	set_transient( 'sfml_notices-' . get_current_user_id(), $update_file );
 
 	update_site_option( 'sfml_version', SFML_VERSION . '|' . $current_mono_multi );
 }

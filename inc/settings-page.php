@@ -228,15 +228,14 @@ function sfml_rewrite_rules_textarea() {
 	// nginx
 	elseif ( $is_nginx ) {
 		$file          = 'nginx.conf';
-		$file_content  = "\n# BEGIN SF Move Login\n";
 		$file_content .= implode( "\n", sfml_nginx_rewrite_rules( $rules ) );
-		$file_content .= "\n# END SF Move Login\n";
 
 		$height        = substr_count( $file_content, "\n" );
 		$content       = sprintf(
 			'<span style="color:red">' . __( 'The plugin can\'t add the new rewrite rules to your %s file by itself, you will need to add them manually.', 'sf-move-login' ) . '</span>',
 			'<code>' . $file . '</code>'
 		);
+		$file          = false;	// Don't check id the file is writable.
 	}
 	// Apache
 	elseif ( $is_apache ) {
@@ -256,7 +255,7 @@ function sfml_rewrite_rules_textarea() {
 	}
 
 	// Add a warning if the file is not writable.
-	if ( ! empty( $home_path ) && ! wp_is_writable( $home_path . $file ) ) {
+	if ( $home_path && $file && ! wp_is_writable( $home_path . $file ) ) {
 		$content .= '</p><p style="color:red">' . sprintf(
 			__( 'Your %s file is not writable.', 'sf-move-login' ),
 			'<code>' . $file . '</code>'

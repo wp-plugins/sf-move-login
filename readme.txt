@@ -30,12 +30,14 @@ Also remember: the use of this plugin does NOT exempt you to use a strong passwo
 
 Yep!
 The plugin must be activated from your network.
+Note 1: this plugin deals only with `wp-login.php`, not with `wp-signup.php` nor with `wp-activate.php` (yet). That means **http://example.com/register** will still redirect to **http://example.com/wp-signup.php**. I think this will be the next step though, but no ETA.
+Note 2: if users/sites registrations are open, you shouldn't use this plugin yet. There are some places where the log in address is hard coded and not filterable. A [bug ticket](https://core.trac.wordpress.org/ticket/31495 "Always use 'login' as $scheme parameter for "login-ish" URLs, and other inconsistencies") is open.
 
 = Requirements =
 
 * See some important informations in the "Installation" tab (I mean it).
 * Should work on IIS7+ servers but not tested (I guess you should probably save a copy of your `web.config` file before the plugin activation).
-* For nginx servers, the rewrite rules are not written automatically of course, but provided as information.
+* For nginx servers, the rewrite rules are not written automatically of course, but they are provided as information in the plugin settings page.
 
 
 == Installation ==
@@ -70,6 +72,17 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 
 == Changelog ==
+
+= 2.1 =
+
+* 2015/03/01
+* New: Installations where [WordPress has its own directory](http://codex.wordpress.org/Giving_WordPress_Its_Own_Directory "Giving WordPress Its Own Directory") are now supported. (〜￣▽￣)〜
+* New: For multisite, the log in address in the "new site" welcome email is now filtered. Unfortunately there are some other places where the log in address can't be changed, regarding the user/site registration messages. A [bug ticket](https://core.trac.wordpress.org/ticket/31495 "Always use 'login' as $scheme parameter for "login-ish" URLs, and other inconsistencies") is open.
+* Improvement: All rewrite rules have been improved. Feedback from Nginx users are welcome (as you may know, I'm a Nginx n00b).
+* Improvement: Better handling of `network_site_url()`.
+* Bugfix: slugs were not stored in `SFML_Options::get_slugs()` before being returned. Trivial perf improvement.
+* The filter 'sfml_options' can't be used to add options, only to modify existing values.
+* Removed some unused global vars.
 
 = 2.0.2 =
 
@@ -169,6 +182,9 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 
 == Upgrade Notice ==
+
+= 2.1 =
+Support for installations where WordPress has its own directory.
 
 = 2.0 =
 The framework Noop is not needed anymore: settings are included in the plugin. Make sure your settings are ok after upgrading.

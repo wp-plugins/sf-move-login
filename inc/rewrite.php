@@ -130,19 +130,31 @@ function sfml_is_subfolder_install() {
 // !Return the multisite rewrite rules (as an array).
 
 function sfml_nginx_rewrite_rules( $rules = array() ) {
-	global $wpdb;
-
 	if ( ! is_array( $rules ) || empty( $rules ) ) {
 		return '';
 	}
 
-	$base         = parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
-	$subdir_match = sfml_is_subfolder_install() ? '([_0-9a-zA-Z-]+/)?' : '(/)?';
-	$out          = array();
+	$base = parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
+	if ( sfml_is_subfolder_install() ) {
+		$wp_siteurl_subdir = '';
+		$subdir_match      = '([_0-9a-zA-Z-]+/)' . ( sfml_wp_directory() ? '' : '?' );
+		$subdir_repl       = '$1';
+	}
+	else {
+		$wp_siteurl_subdir = sfml_wp_directory();
+		$subdir_match      = '';
+		$subdir_repl       = '';
+	}
+
+	$out = array(
+		'location ' . $base . ' {',
+	);
 
 	foreach ( $rules as $slug => $rule ) {
-		$out[] = 'rewrite ^' . $subdir_match . $slug . '/?$ $1' . $rule . ' break';
+		$out[] = '    rewrite ^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$ /' . $wp_siteurl_subdir . $subdir_repl . $rule . ' break';
 	}
+
+	$out[] = '}';
 
 	return $out;
 }
@@ -155,22 +167,29 @@ function sfml_nginx_rewrite_rules( $rules = array() ) {
 // !Return the multisite rewrite rules (as an array).
 
 function sfml_apache_rewrite_rules( $rules = array() ) {
-	global $wpdb;
-
 	if ( ! is_array( $rules ) || empty( $rules ) ) {
 		return '';
 	}
 
-	$base			= parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
-	$subdir_match	= sfml_is_subfolder_install() ? '([_0-9a-zA-Z-]+/)?' : '';
+	$base = parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
+	if ( sfml_is_subfolder_install() ) {
+		$wp_siteurl_subdir = '';
+		$subdir_match      = '([_0-9a-zA-Z-]+/)' . ( sfml_wp_directory() ? '' : '?' );
+		$subdir_repl       = '$1';
+	}
+	else {
+		$wp_siteurl_subdir = sfml_wp_directory();
+		$subdir_match      = '';
+		$subdir_repl       = '';
+	}
 
-	$out			= array(
+	$out = array(
 		'<IfModule mod_rewrite.c>',
-		'RewriteEngine On',
-		'RewriteBase ' . $base,
+		'    RewriteEngine On',
+		'    RewriteBase ' . $base,
 	);
 	foreach ( $rules as $slug => $rule ) {
-		$out[] = 'RewriteRule ^' . $subdir_match . $slug . '/?$ $1' . $rule . ' [QSA,L]';
+		$out[] = '    RewriteRule ^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$ ' . $wp_siteurl_subdir . $subdir_repl . $rule . ' [QSA,L]';
 	}
 	$out[] = '</IfModule>';
 
@@ -236,26 +255,29 @@ function sfml_insert_apache_rewrite_rules( $marker, $rules = '', $before = '# BE
 // !Return the multisite rewrite rules for IIS systems (as a part of a xml system).
 
 function sfml_iis7_rewrite_rules( $rules = array(), $marker = null ) {
-	global $wpdb;
-
 	if ( ! is_array( $rules ) || empty( $rules ) || empty( $marker ) ) {
 		return '';
 	}
 
-	$base				= parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
-	$subfolder_install	= sfml_is_subfolder_install();
-	$subdir_match		= $subfolder_install ? '([_0-9a-zA-Z-]+/)?' : '';
-	$iis_subdir_match	= ltrim( $base, '/' ) . $subdir_match;
-	$iis_subdir_repl	= $subfolder_install ? '{R:1}' : '';
+	$base = ltrim( parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH ), '/' );
+	if ( sfml_is_subfolder_install() ) {
+		$wp_siteurl_subdir = $base;
+		$subdir_match      = '([_0-9a-zA-Z-]+/)' . ( sfml_wp_directory() ? '' : '?' );
+		$subdir_repl       = '{R:1}';
+	}
+	else {
+		$wp_siteurl_subdir = $base . sfml_wp_directory();
+		$subdir_match      = '';
+		$subdir_repl       = '';
+	}
 
-	$rule_i				= 1;
-	$space				= str_repeat( ' ', 16 );
-
-	$out				= array();
+	$rule_i = 1;
+	$space  = str_repeat( ' ', 16 );
+	$out    = array();
 	foreach ( $rules as $slug => $rule ) {
 		$out[]	= $space . '<rule name="' . $marker . ' Rule ' . $rule_i . '" stopProcessing="true">' . "\n"
-				. $space . '    <match url="^' . $iis_subdir_match . $slug . '/?$" ignoreCase="false" />' . "\n"
-				. $space . '    <action type="Redirect" url="' . $iis_subdir_repl . $rule . '" redirectType="Permanent" />' . "\n"
+				. $space . '    <match url="^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$" ignoreCase="false" />' . "\n"
+				. $space . '    <action type="Redirect" url="' . $wp_siteurl_subdir . $subdir_repl . $rule . '" redirectType="Permanent" />' . "\n"
 				. $space . "</rule>\n";
 		$rule_i++;
 	}

@@ -154,21 +154,25 @@ function set_url_scheme( $url, $scheme = null ) {
 
 	if ( ! $scheme ) {
 		$scheme = is_ssl() ? 'https' : 'http';
-	} elseif ( $scheme === 'admin' || $scheme === 'login' || $scheme === 'login_post' || $scheme === 'rpc' ) {
+	}
+	elseif ( $scheme === 'admin' || $scheme === 'login' || $scheme === 'login_post' || $scheme === 'rpc' ) {
 		$scheme = is_ssl() || force_ssl_admin() ? 'https' : 'http';
-	} elseif ( $scheme !== 'http' && $scheme !== 'https' && $scheme !== 'relative' ) {
+	}
+	elseif ( $scheme !== 'http' && $scheme !== 'https' && $scheme !== 'relative' ) {
 		$scheme = is_ssl() ? 'https' : 'http';
 	}
 
 	$url = trim( $url );
-	if ( substr( $url, 0, 2 ) === '//' )
+	if ( substr( $url, 0, 2 ) === '//' ) {
 		$url = 'http:' . $url;
+	}
 
 	if ( 'relative' == $scheme ) {
 		$url = ltrim( preg_replace( '#^\w+://[^/]*#', '', $url ) );
 		if ( $url !== '' && $url[0] === '/' )
-			$url = '/' . ltrim($url , "/ \t\n\r\0\x0B" );
-	} else {
+			$url = '/' . ltrim( $url , "/ \t\n\r\0\x0B" );
+	}
+	else {
 		$url = preg_replace( '#^\w+://#', $scheme . '://', $url );
 	}
 
@@ -205,5 +209,27 @@ function sfml_get_home_path() {
 
 	return str_replace( '\\', '/', $home_path );
 }
+
+
+// !Has WP its own directory? See http://codex.wordpress.org/Giving_WordPress_Its_Own_Directory
+
+function sfml_wp_directory() {
+	static $wp_siteurl_subdir;
+
+	if ( ! isset( $wp_siteurl_subdir ) ) {
+		$wp_siteurl_subdir = '';
+
+		$home    = set_url_scheme( rtrim( get_option( 'home' ), '/' ), 'http' );
+		$siteurl = set_url_scheme( rtrim( get_option( 'siteurl' ), '/' ), 'http' );
+
+		if ( ! empty( $home ) && 0 !== strcasecmp( $home, $siteurl ) ) {
+			$wp_siteurl_subdir = trim( str_ireplace( $home, '', $siteurl ), '/' ); /* $siteurl - $home */
+			$wp_siteurl_subdir = $wp_siteurl_subdir !== '' ? $wp_siteurl_subdir . '/' : '';
+		}
+	}
+
+	return $wp_siteurl_subdir;
+}
+
 
 /**/
