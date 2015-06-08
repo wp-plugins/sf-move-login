@@ -151,7 +151,7 @@ function sfml_nginx_rewrite_rules( $rules = array() ) {
 	);
 
 	foreach ( $rules as $slug => $rule ) {
-		$out[] = '    rewrite ^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$ /' . $wp_siteurl_subdir . $subdir_repl . $rule . ' break';
+		$out[] = '    rewrite ^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$ /' . $wp_siteurl_subdir . $subdir_repl . $rule . ' break;';
 	}
 
 	$out[] = '}';

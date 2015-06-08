@@ -3,7 +3,7 @@
 Contributors: GregLone, SecuPress, juliobox
 Tags: login, logout, url, security
 Requires at least: 3.1
-Tested up to: 4.1.1
+Tested up to: 4.2.2
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
@@ -72,6 +72,11 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 
 == Changelog ==
+
+= 2.1.1 =
+
+* 2015/08/06
+* Bugfix: Added missing semicolon in rewrite rules for nginx.
 
 = 2.1 =
 
