@@ -228,7 +228,7 @@ function sfml_rewrite_rules_textarea() {
 	// nginx
 	elseif ( $is_nginx ) {
 		$file          = 'nginx.conf';
-		$file_content .= implode( "\n", sfml_nginx_rewrite_rules( $rules ) );
+		$file_content  = implode( "\n", sfml_nginx_rewrite_rules( $rules ) );
 
 		$height        = substr_count( $file_content, "\n" );
 		$content       = sprintf(

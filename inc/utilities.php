@@ -127,20 +127,20 @@ function sfml_login_to_action( $link, $action ) {
 
 if ( ! function_exists( 'sf_get_current_url' ) ) :
 function sf_get_current_url( $mode = 'base' ) {
-	$url = ! empty( $GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI'] ) ? $GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI'] : ( ! empty( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '' );
-	$url = 'http' . ( is_ssl() ? 's' : '' ) . '://' . $_SERVER['HTTP_HOST'] . $url;
+	$mode = (string) $mode;
+	$url  = ! empty( $GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI'] ) ? $GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI'] : ( ! empty( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '' );
+	$url  = 'http' . ( is_ssl() ? 's' : '' ) . '://' . $_SERVER['HTTP_HOST'] . $url;
+
 	switch( $mode ) :
-		case 'raw'  :
+		case 'raw' :
 			return $url;
-			break;
-		case 'base' :
-			$url = reset( (explode( '?', $url )) );
-			return reset( (explode( '&', $url )) );
-			break;
-		case 'uri'  :
-			$url = reset( (explode( '?', $url )) );
-			$url = reset( (explode( '&', $url )) );
+		case 'uri' :
+			$url = reset( ( explode( '?', $url ) ) );
+			$url = reset( ( explode( '&', $url ) ) );
 			return trim( str_replace( home_url(), '', $url ), '/' );
+		default :
+			$url = reset( ( explode( '?', $url ) ) );
+			return reset( ( explode( '&', $url ) ) );
 	endswitch;
 }
 endif;
@@ -211,6 +211,14 @@ function sfml_get_home_path() {
 }
 
 
+// !Format un slug with no heading slash and a slash at the end.
+// If the slug is empty, it returns an empty string, not a lonely slash.
+
+function sfml_trailingslash_only( $slug ) {
+	return ltrim( trim( $slug, '/' ) . '/', '/' );
+}
+
+
 // !Has WP its own directory? See http://codex.wordpress.org/Giving_WordPress_Its_Own_Directory
 
 function sfml_wp_directory() {
@@ -223,8 +231,8 @@ function sfml_wp_directory() {
 		$siteurl = set_url_scheme( rtrim( get_option( 'siteurl' ), '/' ), 'http' );
 
 		if ( ! empty( $home ) && 0 !== strcasecmp( $home, $siteurl ) ) {
-			$wp_siteurl_subdir = trim( str_ireplace( $home, '', $siteurl ), '/' ); /* $siteurl - $home */
-			$wp_siteurl_subdir = $wp_siteurl_subdir !== '' ? $wp_siteurl_subdir . '/' : '';
+			$wp_siteurl_subdir = str_ireplace( $home, '', $siteurl ); /* $siteurl - $home */
+			$wp_siteurl_subdir = sfml_trailingslash_only( $wp_siteurl_subdir );
 		}
 	}
 

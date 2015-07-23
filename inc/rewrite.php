@@ -134,7 +134,9 @@ function sfml_nginx_rewrite_rules( $rules = array() ) {
 		return '';
 	}
 
-	$base = parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
+	$base        = parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
+	$subdir_base = sfml_trailingslash_only( $base );
+
 	if ( sfml_is_subfolder_install() ) {
 		$wp_siteurl_subdir = '';
 		$subdir_match      = '([_0-9a-zA-Z-]+/)' . ( sfml_wp_directory() ? '' : '?' );
@@ -151,7 +153,7 @@ function sfml_nginx_rewrite_rules( $rules = array() ) {
 	);
 
 	foreach ( $rules as $slug => $rule ) {
-		$out[] = '    rewrite ^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$ /' . $wp_siteurl_subdir . $subdir_repl . $rule . ' break;';
+		$out[] = '    rewrite ^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$ /' . $subdir_base . $wp_siteurl_subdir . $subdir_repl . $rule . ' break;';
 	}
 
 	$out[] = '}';
@@ -172,6 +174,7 @@ function sfml_apache_rewrite_rules( $rules = array() ) {
 	}
 
 	$base = parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH );
+
 	if ( sfml_is_subfolder_install() ) {
 		$wp_siteurl_subdir = '';
 		$subdir_match      = '([_0-9a-zA-Z-]+/)' . ( sfml_wp_directory() ? '' : '?' );
@@ -188,9 +191,11 @@ function sfml_apache_rewrite_rules( $rules = array() ) {
 		'    RewriteEngine On',
 		'    RewriteBase ' . $base,
 	);
+
 	foreach ( $rules as $slug => $rule ) {
 		$out[] = '    RewriteRule ^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$ ' . $wp_siteurl_subdir . $subdir_repl . $rule . ' [QSA,L]';
 	}
+
 	$out[] = '</IfModule>';
 
 	return $out;
@@ -244,6 +249,7 @@ function sfml_insert_apache_rewrite_rules( $marker, $rules = '', $before = '# BE
 		// Update the .htacces file
 		return (bool) file_put_contents( $htaccess_file , $htaccess_content );
 	}
+
 	return false;
 }
 
@@ -259,7 +265,8 @@ function sfml_iis7_rewrite_rules( $rules = array(), $marker = null ) {
 		return '';
 	}
 
-	$base = ltrim( parse_url( trailingslashit( get_option( 'home' ) ), PHP_URL_PATH ), '/' );
+	$base = sfml_trailingslash_only( parse_url( get_option( 'home' ), PHP_URL_PATH ) );
+
 	if ( sfml_is_subfolder_install() ) {
 		$wp_siteurl_subdir = $base;
 		$subdir_match      = '([_0-9a-zA-Z-]+/)' . ( sfml_wp_directory() ? '' : '?' );
@@ -274,11 +281,12 @@ function sfml_iis7_rewrite_rules( $rules = array(), $marker = null ) {
 	$rule_i = 1;
 	$space  = str_repeat( ' ', 16 );
 	$out    = array();
+
 	foreach ( $rules as $slug => $rule ) {
-		$out[]	= $space . '<rule name="' . $marker . ' Rule ' . $rule_i . '" stopProcessing="true">' . "\n"
-				. $space . '    <match url="^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$" ignoreCase="false" />' . "\n"
-				. $space . '    <action type="Redirect" url="' . $wp_siteurl_subdir . $subdir_repl . $rule . '" redirectType="Permanent" />' . "\n"
-				. $space . "</rule>\n";
+		$out[] = $space . '<rule name="' . $marker . ' Rule ' . $rule_i . '" stopProcessing="true">' . "\n"
+		       . $space . '    <match url="^' . $wp_siteurl_subdir . $subdir_match . $slug . '/?$" ignoreCase="false" />' . "\n"
+		       . $space . '    <action type="Redirect" url="' . $wp_siteurl_subdir . $subdir_repl . $rule . '" redirectType="Permanent" />' . "\n"
+		       . $space . "</rule>\n";
 		$rule_i++;
 	}
 

@@ -3,7 +3,7 @@
 Contributors: GregLone, SecuPress, juliobox
 Tags: login, logout, url, security
 Requires at least: 3.1
-Tested up to: 4.2.2
+Tested up to: 4.2.3
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
@@ -13,9 +13,8 @@ Change your login URL for something like <code>http://example.com/login</code> a
 
 == Description ==
 
-This plugin forbids access to **http://example.com/wp-login.php** and creates new urls, like **http://example.com/login** or **http://example.com/logout**.
-
-This is a great way to limit bots trying to brute force your login (trying to guess your login and password). Of course, the new urls are easier to remember too.
+This plugin forbids access to **http://example.com/wp-login.php** and creates new urls, like **http://example.com/login** or **http://example.com/logout**. 
+This is a great way to limit bots trying to brute force your login (trying to guess your login and password). Of course, the new URLs are easier to remember too.
 
 Also remember: the use of this plugin does NOT exempt you to use a strong password. Moreover, never use "admin" as login, this is the first attempt for bots.
 
@@ -51,7 +50,7 @@ Note 2: if users/sites registrations are open, you shouldn't use this plugin yet
 
 == Frequently Asked Questions ==
 
-= Can I set my own urls? =
+= Can I set my own URLs? =
 
 Since the version 1.1, yes. And since the version 2.0, you don't need any additional plugin for that.
 
@@ -73,9 +72,15 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 == Changelog ==
 
+= 2.1.2 =
+
+* 2015/07/23
+* Bugfix: Added missing base URL in rewrite rules for nginx when the site is not installed at the domain root.
+* Bugfix: php warning in settings page.
+
 = 2.1.1 =
 
-* 2015/08/06
+* 2015/06/08
 * Bugfix: Added missing semicolon in rewrite rules for nginx.
 
 = 2.1 =
