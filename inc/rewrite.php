@@ -71,9 +71,11 @@ function sfml_write_rules( $rules = null ) {
 
 function sfml_is_nginx() {
 	global $is_nginx;
+
 	if ( is_null( $is_nginx ) ) {
 		$is_nginx = ! empty( $_SERVER['SERVER_SOFTWARE'] ) && strpos( $_SERVER['SERVER_SOFTWARE'], 'nginx' ) !== false;
 	}
+
 	return $is_nginx;
 }
 
@@ -222,13 +224,13 @@ function sfml_insert_apache_rewrite_rules( $marker, $rules = '', $before = '# BE
 	if (
 		( $htaccess_is_writable && !$rules ) ||		// Remove rules
 		( $htaccess_is_writable && $rules && $got_mod_rewrite ) ||		// Add rules
-		( !$has_htaccess && is_writeable( $home_path ) && $rules && $got_mod_rewrite )		// Create htaccess + add rules
+		( ! $has_htaccess && is_writeable( $home_path ) && $rules && $got_mod_rewrite )		// Create htaccess + add rules
 	) {
 		// Current htaccess content
 		$htaccess_content = $has_htaccess ? file_get_contents( $htaccess_file ) : '';
 
 		// No WordPress rules or no "before tag"?
-		if ( ( !$before || false === strpos( $htaccess_content, $before ) ) && $rules ) {
+		if ( ( ! $before || false === strpos( $htaccess_content, $before ) ) && $rules ) {
 			return insert_with_markers( $htaccess_file, $marker, $rules );
 		}
 
@@ -237,8 +239,10 @@ function sfml_insert_apache_rewrite_rules( $marker, $rules = '', $before = '# BE
 
 		// New content
 		if ( $before && $rules ) {
+
 			$rules = is_array( $rules ) ? implode( "\n", $rules ) : $rules;
 			$rules = trim( $rules, "\r\n " );
+
 			if ( $rules ) {
 				// The new content need to be inserted before the WordPress rules
 				$rules = "# BEGIN $marker\n$rules\n# END $marker\n\n\n$before";
@@ -305,9 +309,9 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 	$home_path       = sfml_get_home_path();
 	$web_config_file = $home_path . 'web.config';
 
-	$has_web_config			= file_exists( $web_config_file );
-	$web_config_is_writable	= $has_web_config && wp_is_writable( $web_config_file );
-	$supports_permalinks	= iis7_supports_permalinks();
+	$has_web_config         = file_exists( $web_config_file );
+	$web_config_is_writable = $has_web_config && wp_is_writable( $web_config_file );
+	$supports_permalinks    = iis7_supports_permalinks();
 
 	// New content
 	$rules = is_array( $rules ) ? implode( "\n", $rules ) : $rules;
@@ -316,7 +320,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 	if (
 		( $web_config_is_writable && !$rules ) ||		// Remove rules
 		( $web_config_is_writable && $rules && $supports_permalinks ) ||		// Add rules
-		( !$has_web_config && wp_is_writable( $home_path ) && $rules && $supports_permalinks )		// Create web.config + add rules
+		( ! $has_web_config && wp_is_writable( $home_path ) && $rules && $supports_permalinks )		// Create web.config + add rules
 	) {
 		// If configuration file does not exist then we create one.
 		if ( ! $has_web_config ) {
@@ -336,6 +340,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 
 		// Remove old rules
 		$old_rules = $xpath->query( '/configuration/system.webServer/rewrite/rules/rule[starts-with(@name,\'' . $marker . '\')]' );
+
 		if ( $old_rules->length > 0 ) {
 			$child = $old_rules->item(0);
 			$parent = $child->parentNode;
@@ -351,6 +356,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 
 		// Check the XPath to the rewrite rule and create XML nodes if they do not exist
 		$xmlnodes = $xpath->query( '/configuration/system.webServer/rewrite/rules' );
+
 		if ( $xmlnodes->length > 0 ) {
 			$rules_node = $xmlnodes->item(0);
 		}
@@ -358,6 +364,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 			$rules_node = $doc->createElement('rules');
 
 			$xmlnodes   = $xpath->query('/configuration/system.webServer/rewrite');
+
 			if ( $xmlnodes->length > 0 ) {
 				$rewrite_node = $xmlnodes->item(0);
 				$rewrite_node->appendChild( $rules_node );
@@ -367,6 +374,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 				$rewrite_node->appendChild( $rules_node );
 
 				$xmlnodes = $xpath->query( '/configuration/system.webServer' );
+
 				if ( $xmlnodes->length > 0 ) {
 					$system_webServer_node = $xmlnodes->item(0);
 					$system_webServer_node->appendChild( $rewrite_node );
@@ -376,6 +384,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 					$system_webServer_node->appendChild( $rewrite_node );
 
 					$xmlnodes = $xpath->query( '/configuration' );
+
 					if ( $xmlnodes->length > 0 ) {
 						$config_node = $xmlnodes->item(0);
 						$config_node->appendChild( $system_webServer_node );
@@ -396,6 +405,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 		if ( $before ) {
 			$wordpress_rules = $xpath->query( '/configuration/system.webServer/rewrite/rules/rule[starts-with(@name,\'' . $before . '\')]' );
 		}
+
 		if ( $before && $wordpress_rules->length > 0 ) {
 			$child  = $wordpress_rules->item(0);
 			$parent = $child->parentNode;

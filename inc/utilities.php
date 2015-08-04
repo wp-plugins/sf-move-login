@@ -108,6 +108,7 @@ function sfml_login_to_action( $link, $action ) {
 	}
 
 	if ( $link && strpos( $link, '/' . $slug ) === false ) {
+
 		$link = str_replace( array( '/' . $slugs['login'], '&amp;', '?amp;', '&' ), array( '/' . $slug, '&', '?', '&amp;' ), remove_query_arg( 'action', $link ) );
 
 		if ( $need_action_param ) {		// In case of a custom action, shouldn't happen.
@@ -163,14 +164,18 @@ function set_url_scheme( $url, $scheme = null ) {
 	}
 
 	$url = trim( $url );
+
 	if ( substr( $url, 0, 2 ) === '//' ) {
 		$url = 'http:' . $url;
 	}
 
 	if ( 'relative' == $scheme ) {
+
 		$url = ltrim( preg_replace( '#^\w+://[^/]*#', '', $url ) );
-		if ( $url !== '' && $url[0] === '/' )
+
+		if ( $url !== '' && $url[0] === '/' ) {
 			$url = '/' . ltrim( $url , "/ \t\n\r\0\x0B" );
+		}
 	}
 	else {
 		$url = preg_replace( '#^\w+://#', $scheme . '://', $url );

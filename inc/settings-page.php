@@ -107,10 +107,17 @@ function sfml_shunt_options_settings_errors() {
 
 function sfml_settings_page() { ?>
 	<div class="wrap">
-		<?php screen_icon( 'tools' ); ?>
-		<h2>Move Login</h2>
+		<?php
+		// WordPress 4.3 uses a `<h1>` tag, not a `<h2>` anymore. In the same time, get rid of the old icon.
+		if ( version_compare( $GLOBALS['wp_version'], '4.3-RC1' ) >= 0 ) {
+			echo '<h1>Move Login</h1>';
+		}
+		else {
+			screen_icon( 'tools' );
+			echo '<h2>Move Login</h2>';
+		}
 
-		<?php require( ABSPATH . 'wp-admin/options-head.php' ); ?>
+		require( ABSPATH . 'wp-admin/options-head.php' ); ?>
 
 		<form name="<?php echo SFML_Options::OPTION_PAGE ?>" method="post" action="<?php echo is_multisite() ? admin_url( 'admin-post.php' ) : admin_url( 'options.php' ); ?>" id="<?php echo SFML_Options::OPTION_PAGE ?>">
 			<?php
