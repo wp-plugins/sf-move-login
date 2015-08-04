@@ -13,7 +13,7 @@ Change your login URL for something like <code>http://example.com/login</code> a
 
 == Description ==
 
-This plugin forbids access to **http://example.com/wp-login.php** and creates new urls, like **http://example.com/login** or **http://example.com/logout**.
+This plugin forbids access to **http://example.com/wp-login.php** and creates new urls, like **http://example.com/login** or **http://example.com/logout**. 
 This is a great way to limit bots trying to brute force your login (trying to guess your login and password). Of course, the new URLs are easier to remember too.
 
 Also remember: the use of this plugin does NOT exempt you to use a strong password. Moreover, never use "admin" as login, this is the first attempt for bots.
