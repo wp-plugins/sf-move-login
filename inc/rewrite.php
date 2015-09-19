@@ -3,17 +3,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Cheatin\' uh?' );
 }
 
-/* !---------------------------------------------------------------------------- */
-/* !	INCLUDES																 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !INCLUDES ==================================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 require_once( ABSPATH . WPINC . '/functions.php' );
 require_once( ABSPATH . 'wp-admin/includes/misc.php' );
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	REWRITE RULES															 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !REWRITE RULES =============================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Return an array of action => url
 
@@ -125,9 +125,9 @@ function sfml_is_subfolder_install() {
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	REWRITE RULES: NGINX													 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !REWRITE RULES: NGINX ======================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Return the multisite rewrite rules (as an array).
 
@@ -164,9 +164,9 @@ function sfml_nginx_rewrite_rules( $rules = array() ) {
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	REWRITE RULES: APACHE													 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !REWRITE RULES: APACHE ======================================================================= */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Return the multisite rewrite rules (as an array).
 
@@ -222,15 +222,15 @@ function sfml_insert_apache_rewrite_rules( $marker, $rules = '', $before = '# BE
 	$got_mod_rewrite      = got_mod_rewrite();
 
 	if (
-		( $htaccess_is_writable && !$rules ) ||		// Remove rules
+		( $htaccess_is_writable && ! $rules ) ||		// Remove rules
 		( $htaccess_is_writable && $rules && $got_mod_rewrite ) ||		// Add rules
 		( ! $has_htaccess && is_writeable( $home_path ) && $rules && $got_mod_rewrite )		// Create htaccess + add rules
 	) {
 		// Current htaccess content
 		$htaccess_content = $has_htaccess ? file_get_contents( $htaccess_file ) : '';
 
-		// No WordPress rules or no "before tag"?
-		if ( ( ! $before || false === strpos( $htaccess_content, $before ) ) && $rules ) {
+		// No "before tag"?
+		if ( ! $before && $rules ) {
 			return insert_with_markers( $htaccess_file, $marker, $rules );
 		}
 
@@ -244,9 +244,16 @@ function sfml_insert_apache_rewrite_rules( $marker, $rules = '', $before = '# BE
 			$rules = trim( $rules, "\r\n " );
 
 			if ( $rules ) {
-				// The new content need to be inserted before the WordPress rules
-				$rules = "# BEGIN $marker\n$rules\n# END $marker\n\n\n$before";
-				$htaccess_content = str_replace( $before, $rules, $htaccess_content );
+				// No WordPress rules? (as in multisite)
+				if ( false === strpos( $htaccess_content, $before ) ) {
+					// The new content needs to be inserted at the begining of the file.
+					$htaccess_content = "# BEGIN $marker\n$rules\n# END $marker\n\n\n$htaccess_content";
+				}
+				else {
+					// The new content needs to be inserted before the WordPress rules.
+					$rules            = "# BEGIN $marker\n$rules\n# END $marker\n\n\n$before";
+					$htaccess_content = str_replace( $before, $rules, $htaccess_content );
+				}
 			}
 		}
 
@@ -258,9 +265,9 @@ function sfml_insert_apache_rewrite_rules( $marker, $rules = '', $before = '# BE
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	REWRITE RULES: IIS														 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !REWRITE RULES: IIS ========================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Return the multisite rewrite rules for IIS systems (as a part of a xml system).
 
@@ -318,7 +325,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 	$rules = trim( $rules, "\r\n" );
 
 	if (
-		( $web_config_is_writable && !$rules ) ||		// Remove rules
+		( $web_config_is_writable && ! $rules ) ||		// Remove rules
 		( $web_config_is_writable && $rules && $supports_permalinks ) ||		// Add rules
 		( ! $has_web_config && wp_is_writable( $home_path ) && $rules && $supports_permalinks )		// Create web.config + add rules
 	) {
@@ -332,7 +339,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 		$doc = new DOMDocument();
 		$doc->preserveWhiteSpace = false;
 
-		if ( $doc->load( $web_config_file ) === false ) {
+		if ( false === $doc->load( $web_config_file ) ) {
 			return false;
 		}
 
@@ -342,7 +349,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 		$old_rules = $xpath->query( '/configuration/system.webServer/rewrite/rules/rule[starts-with(@name,\'' . $marker . '\')]' );
 
 		if ( $old_rules->length > 0 ) {
-			$child = $old_rules->item(0);
+			$child  = $old_rules->item( 0 );
 			$parent = $child->parentNode;
 			$parent->removeChild( $child );
 		}
@@ -358,39 +365,39 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 		$xmlnodes = $xpath->query( '/configuration/system.webServer/rewrite/rules' );
 
 		if ( $xmlnodes->length > 0 ) {
-			$rules_node = $xmlnodes->item(0);
+			$rules_node = $xmlnodes->item( 0 );
 		}
 		else {
-			$rules_node = $doc->createElement('rules');
+			$rules_node = $doc->createElement( 'rules' );
 
-			$xmlnodes   = $xpath->query('/configuration/system.webServer/rewrite');
+			$xmlnodes   = $xpath->query( '/configuration/system.webServer/rewrite' );
 
 			if ( $xmlnodes->length > 0 ) {
-				$rewrite_node = $xmlnodes->item(0);
+				$rewrite_node = $xmlnodes->item( 0 );
 				$rewrite_node->appendChild( $rules_node );
 			}
 			else {
-				$rewrite_node = $doc->createElement('rewrite');
+				$rewrite_node = $doc->createElement( 'rewrite' );
 				$rewrite_node->appendChild( $rules_node );
 
 				$xmlnodes = $xpath->query( '/configuration/system.webServer' );
 
 				if ( $xmlnodes->length > 0 ) {
-					$system_webServer_node = $xmlnodes->item(0);
+					$system_webServer_node = $xmlnodes->item( 0 );
 					$system_webServer_node->appendChild( $rewrite_node );
 				}
 				else {
-					$system_webServer_node = $doc->createElement('system.webServer');
+					$system_webServer_node = $doc->createElement( 'system.webServer' );
 					$system_webServer_node->appendChild( $rewrite_node );
 
 					$xmlnodes = $xpath->query( '/configuration' );
 
 					if ( $xmlnodes->length > 0 ) {
-						$config_node = $xmlnodes->item(0);
+						$config_node = $xmlnodes->item( 0 );
 						$config_node->appendChild( $system_webServer_node );
 					}
 					else {
-						$config_node = $doc->createElement('configuration');
+						$config_node = $doc->createElement( 'configuration' );
 						$doc->appendChild( $config_node );
 						$config_node->appendChild( $system_webServer_node );
 					}
@@ -407,7 +414,7 @@ function sfml_insert_iis7_rewrite_rules( $marker, $rules = '', $before = 'wordpr
 		}
 
 		if ( $before && $wordpress_rules->length > 0 ) {
-			$child  = $wordpress_rules->item(0);
+			$child  = $wordpress_rules->item( 0 );
 			$parent = $child->parentNode;
 			$parent->insertBefore( $element, $child );
 		}

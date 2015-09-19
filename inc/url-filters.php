@@ -3,21 +3,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Cheatin\' uh?' );
 }
 
-
-/* !---------------------------------------------------------------------------- */
-/* !	FILTER URLS																 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !FILTER URLS ================================================================================= */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Site URL
 
 add_filter( 'site_url', 'sfml_site_url', 10, 4 );
 
 function sfml_site_url( $url, $path, $scheme, $blog_id = null ) {
-	if ( ! empty( $path ) && is_string( $path ) && strpos( $path, '..' ) === false && strpos( ltrim( $path, '/' ), 'wp-login.php' ) === 0 ) {
+	if ( ! empty( $path ) && is_string( $path ) && false === strpos( $path, '..' ) && 0 === strpos( ltrim( $path, '/' ), 'wp-login.php' ) ) {
 		$blog_id = (int) $blog_id;
 
 		// Base url
-		if ( empty( $blog_id ) || $blog_id === get_current_blog_id() || ! is_multisite() ) {
+		if ( empty( $blog_id ) || get_current_blog_id() === $blog_id || ! is_multisite() ) {
 			$url = get_option( 'siteurl' );
 		}
 		else {
@@ -39,7 +38,7 @@ function sfml_site_url( $url, $path, $scheme, $blog_id = null ) {
 add_filter( 'network_site_url', 'sfml_network_site_url', 10, 3 );
 
 function sfml_network_site_url( $url, $path, $scheme ) {
-	if ( ! empty( $path ) && is_string( $path ) && strpos( $path, '..' ) === false && strpos( ltrim( $path, '/' ), 'wp-login.php' ) === 0 ) {
+	if ( ! empty( $path ) && is_string( $path ) && false === strpos( $path, '..' ) && 0 === strpos( ltrim( $path, '/' ), 'wp-login.php' ) ) {
 		return site_url( $path, $scheme );
 	}
 
@@ -70,7 +69,7 @@ function sfml_lostpassword_url( $lostpassword_url, $redirect ) {
 add_filter( 'wp_redirect', 'sfml_redirect', 10, 2 );
 
 function sfml_redirect( $location, $status ) {
-	if ( site_url( reset( (explode( '?', $location )) ) ) === site_url( 'wp-login.php' ) ) {
+	if ( site_url( reset( ( explode( '?', $location ) ) ) ) === site_url( 'wp-login.php' ) ) {
 		return sfml_site_url( $location, $location, 'login', get_current_blog_id() );
 	}
 
@@ -83,7 +82,7 @@ function sfml_redirect( $location, $status ) {
 add_filter( 'update_welcome_email', 'sfml_update_welcome_email', 10, 6 );
 
 function sfml_update_welcome_email( $welcome_email, $blog_id, $user_id, $password, $title, $meta ) {
-	$url = get_blogaddress_by_id($blog_id);
+	$url = get_blogaddress_by_id( $blog_id );
 
 	switch_to_blog( $blog_id );
 	$login_url = wp_login_url();

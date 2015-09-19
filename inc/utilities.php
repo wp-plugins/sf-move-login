@@ -3,10 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Cheatin\' uh?' );
 }
 
-
-/* !---------------------------------------------------------------------------- */
-/* !	OPTIONS																	 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !OPTIONS ===================================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Get all options
 
@@ -45,9 +44,9 @@ function sfml_deny_admin_access() {
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	UTILITIES																 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !UTILITIES =================================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Construct the url
 
@@ -58,7 +57,7 @@ function sfml_set_path( $path ) {
 	$parsed_path = parse_url( $path );
 	if ( ! empty( $parsed_path['query'] ) ) {
 		wp_parse_str( $parsed_path['query'], $params );
-		$action = !empty( $params['action'] ) ? $params['action'] : 'login';
+		$action = ! empty( $params['action'] ) ? $params['action'] : 'login';
 
 		if ( isset( $params['key'] ) ) {
 			$action = 'resetpass';
@@ -73,7 +72,7 @@ function sfml_set_path( $path ) {
 	}
 
 	// Path
-	if ( isset($slugs[$action]) ) {
+	if ( isset( $slugs[ $action ] ) ) {
 		$path = str_replace( 'wp-login.php', $slugs[ $action ], $path );
 		$path = remove_query_arg( 'action', $path );
 	}
@@ -107,7 +106,7 @@ function sfml_login_to_action( $link, $action ) {
 		}
 	}
 
-	if ( $link && strpos( $link, '/' . $slug ) === false ) {
+	if ( $link && false === strpos( $link, '/' . $slug ) ) {
 
 		$link = str_replace( array( '/' . $slugs['login'], '&amp;', '?amp;', '&' ), array( '/' . $slug, '&', '?', '&amp;' ), remove_query_arg( 'action', $link ) );
 
@@ -120,9 +119,9 @@ function sfml_login_to_action( $link, $action ) {
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	GENERIC TOOLS															 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !GENERIC TOOLS =============================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Get current URL.
 
@@ -132,7 +131,7 @@ function sf_get_current_url( $mode = 'base' ) {
 	$url  = ! empty( $GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI'] ) ? $GLOBALS['HTTP_SERVER_VARS']['REQUEST_URI'] : ( ! empty( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '' );
 	$url  = 'http' . ( is_ssl() ? 's' : '' ) . '://' . $_SERVER['HTTP_HOST'] . $url;
 
-	switch( $mode ) :
+	switch ( $mode ) :
 		case 'raw' :
 			return $url;
 		case 'uri' :
@@ -156,10 +155,10 @@ function set_url_scheme( $url, $scheme = null ) {
 	if ( ! $scheme ) {
 		$scheme = is_ssl() ? 'https' : 'http';
 	}
-	elseif ( $scheme === 'admin' || $scheme === 'login' || $scheme === 'login_post' || $scheme === 'rpc' ) {
+	elseif ( 'admin' === $scheme || 'login' === $scheme || 'login_post' === $scheme || 'rpc' === $scheme ) {
 		$scheme = is_ssl() || force_ssl_admin() ? 'https' : 'http';
 	}
-	elseif ( $scheme !== 'http' && $scheme !== 'https' && $scheme !== 'relative' ) {
+	elseif ( 'http' !== $scheme && 'https' !== $scheme && 'relative' !== $scheme ) {
 		$scheme = is_ssl() ? 'https' : 'http';
 	}
 

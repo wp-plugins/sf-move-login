@@ -3,17 +3,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Cheatin\' uh?' );
 }
 
-
-/* !---------------------------------------------------------------------------- */
-/* !	REMOVE DEFAULT WORDPRESS REDIRECTIONS TO LOGIN AND ADMIN AREAS			 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !REMOVE DEFAULT WORDPRESS REDIRECTIONS TO LOGIN AND ADMIN AREAS ============================== */
+/*------------------------------------------------------------------------------------------------*/
 
 remove_action( 'template_redirect', 'wp_redirect_admin_locations', 1000 );
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	IF THE CURRENT URI IS NOT LISTED IN OUR SLUGS, DENY ACCESS TO THE FORM	 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !IF THE CURRENT URI IS NOT LISTED IN OUR SLUGS, DENY ACCESS TO THE FORM ====================== */
+/*------------------------------------------------------------------------------------------------*/
 
 add_action( 'login_init', 'sfml_login_init', 0 );
 
@@ -51,7 +50,7 @@ add_action( 'sfml_wp_login_error', 'sfml_wp_login_error' );
 function sfml_wp_login_error() {
 	$do = sfml_deny_wp_login_access();
 
-	switch( $do ) {
+	switch ( $do ) {
 		case 2:
 			$redirect = $GLOBALS['wp_rewrite']->using_permalinks() ? home_url( '404' ) : add_query_arg( 'p', '404', home_url() );
 			wp_safe_redirect( esc_url( user_trailingslashit( apply_filters( 'sfml_404_error_page', $redirect ) ) ) );
@@ -65,16 +64,16 @@ function sfml_wp_login_error() {
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	IF NOT CONNECTED, DO NOT REDIRECT FROM ADMIN AREA TO WP-LOGIN.PHP		 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !IF NOT CONNECTED, DO NOT REDIRECT FROM ADMIN AREA TO WP-LOGIN.PHP =========================== */
+/*------------------------------------------------------------------------------------------------*/
 
 add_action( 'after_setup_theme', 'sfml_maybe_die_before_admin_redirect', 12 );
 
 function sfml_maybe_die_before_admin_redirect() {
 	global $pagenow;
 	// If it's not the administration area, or if it's an ajax call, no need to go further.
-	if ( ! ( is_admin() && ! ( ( defined('DOING_AJAX') && DOING_AJAX ) || ( $pagenow === 'admin-post.php' && ! empty( $_REQUEST['action'] ) ) ) ) ) {
+	if ( ! ( is_admin() && ! ( ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || ( 'admin-post.php' === $pagenow && ! empty( $_REQUEST['action'] ) ) ) ) ) {
 		return;
 	}
 
@@ -96,11 +95,11 @@ add_action( 'sfml_wp_admin_error', 'sfml_wp_admin_error' );
 function sfml_wp_admin_error() {
 	$do = sfml_deny_admin_access();
 
-	switch( $do ) {
+	switch ( $do ) {
 		case 1:
 			wp_die( __( 'Cheatin&#8217; uh?' ) );
 		case 2:
-			$redirect = $GLOBALS['wp_rewrite']->using_permalinks() ? home_url('404') : add_query_arg( 'p', '404', home_url() );
+			$redirect = $GLOBALS['wp_rewrite']->using_permalinks() ? home_url( '404' ) : add_query_arg( 'p', '404', home_url() );
 			wp_safe_redirect( esc_url( user_trailingslashit( apply_filters( 'sfml_404_error_page', $redirect ) ) ) );
 			exit;
 		case 3:

@@ -3,6 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Cheatin\' uh?' );
 }
 
+/*------------------------------------------------------------------------------------------------*/
+/* !CLASS BEARING THE MECHANISM FOR OPTIONS ===================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 class SFML_Options {
 
@@ -37,14 +40,11 @@ class SFML_Options {
 		if ( ! isset( self::$options_default ) ) {
 			// Default slugs.
 			self::$options_default = array(
-				'slugs.postpass'         => 'postpass',
-				'slugs.logout'           => 'logout',
-				'slugs.lostpassword'     => 'lostpassword',
-				'slugs.retrievepassword' => 'retrievepassword',
-				'slugs.resetpass'        => 'resetpass',
-				'slugs.rp'               => 'rp',
-				'slugs.register'         => 'register',
-				'slugs.login'            => 'login',
+				'slugs.logout'       => 'logout',
+				'slugs.lostpassword' => 'lostpassword',
+				'slugs.resetpass'    => 'resetpass',
+				'slugs.register'     => 'register',
+				'slugs.login'        => 'login',
 			);
 
 			// Plugins can add their own actions.
@@ -140,7 +140,12 @@ class SFML_Options {
 
 		// Add and sanitize slugs
 		$default_slugs = self::get_sub_options( 'slugs', $defaults );
-		$exclude       = array_diff_key( $default_slugs, self::slugs_fields_labels() );	// postpass, retrievepassword, rp
+		$exclude       = array(
+			'postpass'         => 'postpass',
+			'retrievepassword' => 'retrievepassword',
+			'rp'               => 'rp',
+		);
+		$exclude       = array_diff_key( $exclude, self::slugs_fields_labels() );
 
 		foreach ( $default_slugs as $slug_key => $default_slug ) {
 
@@ -244,23 +249,26 @@ class SFML_Options {
 	// !Get sub-options.
 
 	public static function get_sub_options( $name = false, $options = array() ) {
-		if ( empty($options) || !$name ) {
+		if ( empty( $options ) || ! $name ) {
 			return array();
 		}
+
 		$options = (array) $options;
 
-		if ( isset($options[ $name ]) ) {
+		if ( isset( $options[ $name ] ) ) {
 			return $options[ $name ];
 		}
 
-		$group	= array();
-		$name	= rtrim($name, '.').'.';
+		$group = array();
+		$name  = rtrim( $name, '.' ) . '.';
+
 		foreach ( $options as $k => $v ) {
-			if ( strpos($k, $name) === 0 ) {
-				$group[ substr($k, strlen($name)) ] = $v;
+			if ( 0 === strpos( $k, $name ) ) {
+				$group[ substr( $k, strlen( $name ) ) ] = $v;
 			}
 		}
-		return !empty($group) ? $group : null;
+
+		return ! empty( $group ) ? $group : null;
 	}
 
 

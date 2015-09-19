@@ -3,10 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Cheatin\' uh?' );
 }
 
-
-/* !---------------------------------------------------------------------------- */
-/* !	UTILITIES																 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !UTILITIES =================================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 if ( ! function_exists( 'get_main_blog_id' ) ) :
 function get_main_blog_id() {
@@ -50,9 +49,23 @@ function sf_maybe_flush_rewrite_rules() {
 endif;
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	LINKS IN THE PLUGIN ROW													 */
-/* ----------------------------------------------------------------------------- */
+// Back-compat WP < 3.6
+
+if ( ! function_exists( 'wp_is_writable' ) ) :
+function wp_is_writable( $path ) {
+	if ( 'WIN' === strtoupper( substr( PHP_OS, 0, 3 ) ) ) {
+		return win_is_writable( $path );
+	}
+	else {
+		return @is_writable( $path );
+	}
+}
+endif;
+
+
+/*------------------------------------------------------------------------------------------------*/
+/* !LINKS IN THE PLUGIN ROW ===================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 add_filter( 'plugin_action_links_' . SFML_PLUGIN_BASENAME, 'sfml_settings_action_links', 10, 2 );
 add_filter( 'network_admin_plugin_action_links_' . SFML_PLUGIN_BASENAME, 'sfml_settings_action_links', 10, 2 );
@@ -81,20 +94,20 @@ function sfml_plugin_row_meta( $plugin_meta, $plugin_file ) {
 		if ( ! empty( $plugin_meta ) ) {
 			$search = '"http://www.screenfeed.fr/"';
 			foreach ( $plugin_meta as $i => $meta ) {
-				if ( strpos( $meta, $search ) !== false ) {
+				if ( false !== strpos( $meta, $search ) ) {
 					$pos = $i;
 					break;
 				}
 			}
 		}
 
-		foreach( $authors as $author ) {
+		foreach ( $authors as $author ) {
 			$links[] = sprintf( '<a href="%s">%s</a>', $author['url'], $author['name'] );
 		}
 
 		$links = sprintf( __( 'By %s' ), wp_sprintf( '%l', $links ) );
 
-		if ( $pos !== false ) {
+		if ( false !== $pos ) {
 			$plugin_meta[ $pos ] = $links;
 		}
 		else {
@@ -106,9 +119,9 @@ function sfml_plugin_row_meta( $plugin_meta, $plugin_file ) {
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	MENU ITEM																 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !MENU ITEM =================================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 add_action( ( is_multisite() ? 'network_' : '' ) . 'admin_menu', 'sfml_admin_menu' );
 
@@ -119,9 +132,9 @@ function sfml_admin_menu() {
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	SETTINGS PAGE															 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !SETTINGS PAGE =============================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Include the settings page file on... the settings page.
 
@@ -132,9 +145,9 @@ function sfml_include_settings_page() {
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	SAVE SETTINGS ON FORM SUBMIT											 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !SAVE SETTINGS ON FORM SUBMIT ================================================================ */
+/*------------------------------------------------------------------------------------------------*/
 
 // !options.php do not handle site options. Let's use admin-post.php for multisite installations.
 
@@ -204,9 +217,9 @@ function sfml_update_site_option_on_submit() {
 endif;
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	UPGRADE																	 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !UPGRADE ===================================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Delete previous options.
 
@@ -242,7 +255,9 @@ function sfml_upgrade() {
 	$current_mono_multi = is_multisite() ? 2 : 1;	// 1: monosite, 2: multisite.
 	$db_version         = get_site_option( 'sfml_version' );
 	$db_version         = is_string( $db_version ) ? explode( '|', $db_version ) : false;
-	$update_file        = '2';						// 2 means "No need to update the file": update_site_option() already did.
+	// "1" means we need to update the `.htaccess`/`web.config` file.
+	// "2" means "No need to update the `.htaccess`/`web.config` file": update_site_option() already did.
+	$update_file        = false;
 
 	if ( $db_version ) {
 		$mono_or_multi  = isset( $db_version[1] ) ? (int) $db_version[1] : 0;
@@ -250,7 +265,7 @@ function sfml_upgrade() {
 	}
 
 	// We're right on track.
-	if ( $db_version && version_compare( $db_version, SFML_VERSION ) === 0 && $mono_or_multi === $current_mono_multi ) {
+	if ( $db_version && 0 === version_compare( $db_version, SFML_VERSION ) && $mono_or_multi === $current_mono_multi ) {
 		return;
 	}
 
@@ -284,25 +299,29 @@ function sfml_upgrade() {
 		$old_options = is_array( $old_options ) ? $old_options : array();
 
 		update_site_option( SFML_Options::OPTION_NAME, $old_options );
+		$update_file = '2';
 
 	}
 	// Switched monosite ==> multisite since the last check.
-	elseif ( $mono_or_multi !== $current_mono_multi && $current_mono_multi === 2 ) {
+	elseif ( $mono_or_multi !== $current_mono_multi && 2 === $current_mono_multi ) {
 
 		$old_options = get_option( 'sfml' );
 		$old_options = is_array( $old_options ) ? $old_options : array();
 		delete_option( 'sfml' );
 
 		update_site_option( SFML_Options::OPTION_NAME, $old_options );
+		$update_file = '2';
 
 	}
-	//
-	elseif ( version_compare( $db_version, '2.1-beta' ) < 0 ) {
+	// We need to update the `.htaccess`/`web.config` file.
+	elseif ( version_compare( $db_version, '2.2' ) < 0 ) {
 		$update_file = '1';
 	}
 
-	// Perhaps we'll need to display some notices. Add the rewrite rules to the .htaccess/web.config file.
-	set_transient( 'sfml_notices-' . get_current_user_id(), $update_file );
+	// Maybe display a notice, but only if the `.htaccess`/`web.config` file needs to be updated.
+	if ( $update_file ) {
+		set_transient( 'sfml_notices-' . get_current_user_id(), $update_file );
+	}
 
 	update_site_option( 'sfml_version', SFML_VERSION . '|' . $current_mono_multi );
 }
@@ -310,9 +329,9 @@ function sfml_upgrade() {
 sfml_upgrade();
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	ADMIN NOTICES + UPDATE REWRITE RULES									 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !ADMIN NOTICES + UPDATE REWRITE RULES ======================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Admin notices
 
@@ -359,7 +378,8 @@ function sfml_notices() {
 		$messages = array();
 
 		foreach ( $notices as $notice ) {
-			$messages[ substr( $notice, 0, strpos( $notice, '_' ) ) ][] = sfml_notice_message( $notice );
+			$index = substr( $notice, 0, strpos( $notice, '_' ) );
+			$messages[ $index ][] = sfml_notice_message( $notice );
 		}
 
 		$messages = array_filter( array_map( 'array_filter', $messages ) );
@@ -369,7 +389,7 @@ function sfml_notices() {
 		}
 
 	}
-	elseif ( $proceed === '1' ) {
+	elseif ( '1' === $proceed ) {
 		// Add the rewrite rules to the .htaccess/web.config file.
 		sfml_write_rules();
 	}

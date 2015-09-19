@@ -3,10 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Cheatin\' uh?' );
 }
 
-
-/* !---------------------------------------------------------------------------- */
-/* !	ACTIVATION																 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !ACTIVATION ================================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // Trigger wp_die() on plugin activation if the server configuration does not fit. Or, set a transient for admin notices.
 
@@ -57,9 +56,9 @@ function sfml_activate() {
 register_activation_hook( SFML_FILE, 'sfml_activate' );
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	DEACTIVATION															 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !DEACTIVATION ================================================================================ */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Remove rewrite rules from the .htaccess/web.config file.
 
@@ -83,19 +82,19 @@ function sfml_deactivate() {
 register_deactivation_hook( SFML_FILE, 'sfml_deactivate' );
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	UTILITIES																 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !UTILITIES =================================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Messages used for notices and die()s
 
 function sfml_notice_message( $k ) {
-	static $messages;
 	global $is_iis7;
+	static $messages;
 
 	if ( is_null( $messages ) ) {
-		$file	= $is_iis7 ? '<code>web.config</code>' : '<code>.htaccess</code>';
-		$link	= '<a href="' . ( is_multisite() ? network_admin_url( 'settings.php?page=move-login' ) : admin_url( 'options-general.php?page=move-login' ) ) . '">Move Login</a>';
+		$file = $is_iis7 ? '<code>web.config</code>' : '<code>.htaccess</code>';
+		$link = '<a href="' . ( is_multisite() ? network_admin_url( 'settings.php?page=move-login' ) : admin_url( 'options-general.php?page=move-login' ) ) . '">Move Login</a>';
 
 		$messages = array(
 			'error_no_request_uri'      => __( 'It seems your server configuration prevent the plugin to work properly. <strong>Move Login</strong> won\'t work.', 'sf-move-login' ),

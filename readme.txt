@@ -3,18 +3,18 @@
 Contributors: GregLone, SecuPress, juliobox
 Tags: login, logout, url, security
 Requires at least: 3.1
-Tested up to: 4.3-RC2
+Tested up to: 4.3
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
 
-Change your login URL for something like <code>http://example.com/login</code> and stop login brute force attempts.
+Change your login URL for something like `http://example.com/login` and stop login brute-force attempts.
 
 
 == Description ==
 
-This plugin forbids access to **http://example.com/wp-login.php** and creates new urls, like **http://example.com/login** or **http://example.com/logout**. 
-This is a great way to limit bots trying to brute force your login (trying to guess your login and password). Of course, the new URLs are easier to remember too.
+This plugin forbids access to **http://example.com/wp-login.php** and creates new urls, like **http://example.com/login** or **http://example.com/logout**.  
+This is a great way to limit bots trying to brute-force your login (trying to guess your login and password). Of course, the new URLs are easier to remember too.
 
 Also remember: the use of this plugin does NOT exempt you to use a strong password. Moreover, never use "admin" as login, this is the first attempt for bots.
 
@@ -36,14 +36,14 @@ Note 2: if users/sites registrations are open, you shouldn't use this plugin yet
 
 * See some important informations in the "Installation" tab (I mean it).
 * Should work on IIS7+ servers but not tested (I guess you should probably save a copy of your `web.config` file before the plugin activation).
-* For nginx servers, the rewrite rules are not written automatically of course, but they are provided as information in the plugin settings page.
+* For Nginx servers, the rewrite rules are not written automatically of course, but they are provided as information in the plugin settings page.
 
 
 == Installation ==
 
 1. Extract the plugin folder from the downloaded ZIP file.
 1. Upload the `sf-move-login` folder to your `/wp-content/plugins/` directory.
-1. If you have another plugin that makes redirections to **http://example.com/wp-login.php** (a short-links plugin for example), disable it or remove the redirection, otherwise they will conflict and you'll be locked out. See the faq in case you're not able to reach the login page (make sure to have a ftp access to your site).
+1. If you have another plugin that makes redirections to **http://example.com/wp-login.php** (a short-links plugin for example), disable it or remove the redirection, otherwise they will conflict and you'll be locked out. See the FAQ in case you're not able to reach the login page (make sure to have a ftp access to your site).
 1. Activate the plugin from the "Plugins" page.
 1. If the plugin can't write your `.htaccess` file or `web.config` file, you'll need to edit it yourself with a ftp access, the rules are provided in the plugin settings page.
 
@@ -56,7 +56,7 @@ Since the version 1.1, yes. And since the version 2.0, you don't need any additi
 
 = I'm locked out! I can't access the login page! =
 
-You're screwed! No, I'm kidding, but you need a ftp access to your site. When logged in with your ftp software, open the file wp-config.php located at the root of your installation. Simply add this in the file: `define( 'SFML_ALLOW_LOGIN_ACCESS', true );` and save the file. This will bypass the plugin and you'll be able to access **http://example.com/wp-login.php**. Another plugin may conflict, you'll need to find which one before removing this new line of code.
+You're screwed! No, I'm kidding, but you need a ftp access to your site. When logged in with your ftp software, open the file `wp-config.php` located at the root of your installation. Simply add this in the file: `define( 'SFML_ALLOW_LOGIN_ACCESS', true );` and save the file. This will bypass the plugin and you'll be able to access **http://example.com/wp-login.php**. Another plugin may conflict, you'll need to find which one before removing this new line of code.
 
 = Does it really work for Multisite? =
 
@@ -72,6 +72,25 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 
 == Changelog ==
 
+= 2.2 =
+
+* 2015/09/18
+* Removed `postpass`, `retrievepassword` and `rp` from the rewrite rules: they are useless and they can be used to find the login page.
+* Fixed a bug in multisite where rewrite rules were inserted after the WordPress rules.
+* The plugin will not display a message ON EVERY BLOODY UPDATE anymore, only if the `.htaccess`/`web.config` file needs to be updated and it is not writeable. Well, too bad... it is the case this time. (╯°□°）╯︵ ┻━┻
+* The code box after the settings form is now hidden by default and can be shown by clicking a button.
+* Some code cleanup.
+
+= 2.1.5 =
+
+* 2015/08/26
+* Back-compat is getting annoying. Last try before dropping support of old versions of WP.
+
+= 2.1.4 =
+
+* 2015/08/26
+* Bugfix for WP < 3.6: `Call to undefined function wp_is_writable()`.
+
 = 2.1.3 =
 
 * 2015/08/05
@@ -80,13 +99,13 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 = 2.1.2 =
 
 * 2015/07/23
-* Bugfix: Added missing base URL in rewrite rules for nginx when the site is not installed at the domain root.
+* Bugfix: Added missing base URL in rewrite rules for Nginx when the site is not installed at the domain root.
 * Bugfix: php warning in settings page.
 
 = 2.1.1 =
 
 * 2015/06/08
-* Bugfix: Added missing semicolon in rewrite rules for nginx.
+* Bugfix: Added missing semicolon in rewrite rules for Nginx.
 
 = 2.1 =
 
@@ -115,7 +134,7 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 * Most of the plugin has been rewritten.
 * New: you don't need my framework Noop to have a settings page anymore (yes, you can uninstall it if it's not used elsewhere). ᕙ(⇀‸↼‶)ᕗ The bad news is there are no settings import/export/history anymore (and it won't come back). Make sure your settings are ok after upgrading.
 * New: the plugin disable some WordPress native redirections to administration area and login page. For example, **http://example.com/dashboard/** was leading to **http://example.com/wp-admin/**. This should solve a bunch of bugs.
-* New: the rewrite rules for nginx servers are now provided in the plugin settings page as information. Thank you [Milouze](https://wordpress.org/support/topic/for-nginx-server).
+* New: the rewrite rules for Nginx servers are now provided in the plugin settings page as information. Thank you [Milouze](https://wordpress.org/support/topic/for-Nginx-server).
 * Improvement: bugfix for IIS servers.
 * Improvement: better French translations.
 * Bugfix: fix double slash in network site url (used for lostpassword).
@@ -123,7 +142,7 @@ Eventually, try the [WordPress support forum](http://wordpress.org/support/plugi
 = 1.1.4 =
 
 * 2014/04/28
-* Plugins can now add their own action to Move Login more easily with the filter `sfml_additional_slugs`. Even without doing anything, Move Login handle custom actions added by other plugins, but the url can't be customisable. Now, these plugins can add a new input field to let users change this new url, and it's very simple.
+* Plugins can now add their own action to Move Login more easily with the filter `sfml_additional_slugs`. Even without doing anything, Move Login handle custom actions added by other plugins, but the url can't be customizable. Now, these plugins can add a new input field to let users change this new url, and it's very simple.
 * Side note: I've just released a new version for my framework Noop (1.0.6). Now you can import and export your settings via a file, see the new tab in the "Help" area.
 
 = 1.1.3 =

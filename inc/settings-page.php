@@ -3,9 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Cheatin\' uh?' );
 }
 
-/* !---------------------------------------------------------------------------- */
-/* !	SETTINGS PAGE															 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !SETTINGS PAGE =============================================================================== */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Add settings fields and sections.
 
@@ -15,7 +15,7 @@ function sfml_settings_fields() {
 	$options  = sfml_get_options();
 
 	// Sections
-	add_settings_section( 'slugs', __( 'Links' ), false, SFML_Options::OPTION_PAGE );
+	add_settings_section( 'slugs',  __( 'Links' ), false, SFML_Options::OPTION_PAGE );
 	add_settings_section( 'access', __( 'Access', 'sf-move-login' ), false, SFML_Options::OPTION_PAGE );
 
 	// Fields
@@ -133,9 +133,9 @@ function sfml_settings_page() { ?>
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	SETTINGS FIELDS															 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !SETTINGS FIELDS ============================================================================= */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Text field
 
@@ -185,7 +185,7 @@ function sfml_radio_field( $args ) {
 	$i = 0;
 	echo $label ? '<label for="' . $id . '">' . $label . '</label><br/>' : '';
 
-	foreach( $values as $input_value => $input_label ) {
+	foreach ( $values as $input_value => $input_label ) {
 		printf(
 			'<input type="radio" name="%s" id="%s"%s value="%s"/>',
 			SFML_Options::OPTION_NAME . '[' . $name . ']',
@@ -229,7 +229,7 @@ function sfml_rewrite_rules_textarea() {
 		$height        = 20;
 		$content       = sprintf(
 			__( 'If the plugin fails to add the new rewrite rules to your %1$s file, add the following to your %1$s file in %2$s, replacing other %3$s rules if they exist, <strong>above</strong> the line reading %4$s:', 'sf-move-login' ),
-			'<code>' . $file . '</code>', '<code>' . $home_path . '</code>', 'SF Move Login', '<code>&lt;rule name="WordPress Rule 1" stopProcessing="true"&gt;</code>'
+			'<code>' . $file . '</code>', '<code>' . $home_path . '</code>', '<strong>Move Login</strong>', '<code>&lt;rule name="WordPress Rule 1" stopProcessing="true"&gt;</code>'
 		);
 	}
 	// nginx
@@ -254,7 +254,7 @@ function sfml_rewrite_rules_textarea() {
 		$height        = substr_count( $file_content, "\n" );
 		$content       = sprintf(
 			__( 'If the plugin fails to add the new rewrite rules to your %1$s file, add the following to your %1$s file in %2$s, replacing other %3$s rules if they exist, <strong>above</strong> the line reading %4$s:', 'sf-move-login' ),
-			'<code>' . $file . '</code>', '<code>' . $home_path . '</code>', 'SF Move Login', '<code># BEGIN WordPress</code>'
+			'<code>' . $file . '</code>', '<code>' . $home_path . '</code>', '<strong>Move Login</strong>', '<code># BEGIN WordPress</code>'
 		);
 	}
 	else {
@@ -274,28 +274,32 @@ function sfml_rewrite_rules_textarea() {
 		$content .= '</p><p class="description">' . __( 'The constant <code>SFML_ALLOW_LOGIN_ACCESS</code> is defined to <code>true</code>, the settings below won\'t take effect.', 'sf-move-login' );
 	}
 
-	$content  = '<p>' . $content . "</p>\n";
-	$content .= '<textarea class="code readonly" readonly="readonly" cols="120" rows="' . $height . '">' . esc_textarea( $file_content ) . "</textarea>\n";
+	$content  = '<p>' . $content . ' <button type="button" id="sfml-file-button" class="button-secondary hide-if-no-js" style="vertical-align:baseline">' . __( 'Show' ) . "</button></p>\n";
+	$content .= '<textarea id="sfml-file-content" class="code readonly hide-if-js" readonly="readonly" cols="120" rows="' . $height . '">' . esc_textarea( $file_content ) . "</textarea>\n";
+	$content .= '<script type="text/javascript">jQuery( "#sfml-file-button" ).on( "click", function() { jQuery( this ).remove(); jQuery( "#sfml-file-content" ).removeClass( "hide-if-js" ); } );</script>' . "\n";
 
 	echo $content;
 }
 
 
-/* !---------------------------------------------------------------------------- */
-/* !	TOOLS																	 */
-/* ----------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------*/
+/* !TOOLS ======================================================================================= */
+/*------------------------------------------------------------------------------------------------*/
 
 // !Build a string for html attributes (means: separated by a space) : array( 'width' => '200', 'height' => '150', 'yolo' => 'foo' ) ==> ' width="200" height="150" yolo="foo"'
 
 if ( ! function_exists( 'build_html_atts' ) ) :
 function build_html_atts( $attributes, $quote = '"' ) {
 	$out = '';
+
 	if ( ! is_array( $attributes ) || empty( $attributes ) ) {
 		return '';
 	}
-	foreach( $attributes as $att_name => $att_value ) {
+
+	foreach ( $attributes as $att_name => $att_value ) {
 		$out .= ' ' . esc_attr( $att_name ) . '=' . $quote . $att_value . $quote;
 	}
+
 	return $out;
 }
 endif;
