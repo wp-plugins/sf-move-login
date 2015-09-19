@@ -8,7 +8,7 @@ Stable tag: trunk
 License: GPLv3
 License URI: http://www.screenfeed.fr/gpl-v3.txt
 
-Change your login URL for something like `http://example.com/login` and stop login brute-force attempts.
+Change your login URL for something like http://example.com/login and stop login brute-force attempts.
 
 
 == Description ==
