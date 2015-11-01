@@ -1,0 +1,38 @@
+# LANGUAGE French translation for SF Move Login plugin for WordPress.
+# Copyright (C) 2013 Grégory Viguier
+# Grégory Viguier.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: w3p-acpt 0.3\n"
+"Report-msgid -Bugs-To: http://scri.in/contact/\n"
+"POT-Creation-Date: 2013-06-01 00:04+0100\n"
+"PO-Revision-Date: 2013-06-03 01:57+0100\n"
+"Last-Translator: Grégory Viguier <gregory@screenfeed.fr>\n"
+"Language-Team: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"Language: fr_FR\n"
+"X-Generator: Poedit 1.5.5\n"
+
+msgid  "Change your login url to http://example.com/login"
+msgstr "Changez l'url de votre page de connexion pour http://example.com/login"
+
+msgid  "Please Make sure to enable %s."
+msgstr "Assurez-vous d'activer les %s."
+
+msgid  "It seems your server configuration prevent the plugin to work properly. <i>SF Move Login</i> will not be activated."
+msgstr "Il semble que votre configuration serveur empêche l'extension de fonctionner correctement. <i>SF Move Login</i> ne sera pas activé."
+
+msgid  "<strong>SF Move Login</strong> has not been activated."
+msgstr "<strong>SF Move Login</strong> n'a pas été activé."
+
+msgid  "<i>SF Move Login</i> needs access to the %1$s file. Please visit the %2$s settings page and copy/paste the given code into the %1$s file."
+msgstr "<i>SF Move Login</i> a besoin d'accéder au fichier %1$s. Merci de vous rendre sur la page de réglages des %2$s et de copier/coller le code fourni dans le fichier %1$s."
+
+msgid  "No no no, the login form is not here."
+msgstr "Non non non, le formulaire de connexion ne se trouve pas ici."
